@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerVista — Youth Employability Simulation Engine</title>
+  <meta name="description" content="A smarter way for students to understand job readiness, skill requirements, and career outcomes.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    // ─────────────────────────────────────────────
+    // EMAILJS CONFIG — Fill in your credentials here
+    // Get them from https://www.emailjs.com/
+    // ─────────────────────────────────────────────
+    const EMAILJS_PUBLIC_KEY   = 'F8-4ubxYtq0wTIe3u';     // Dashboard → Account → Public Key
+    const EMAILJS_SERVICE_ID   = 'service_ia4vewb';     // Email Services → your service ID
+    const EMAILJS_TEMPLATE_ID  = 'template_bydxw56';    // Email Templates → your template ID
+    // ─────────────────────────────────────────────
+
+    window.addEventListener('load', function(){
+      if(EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY'){
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      }
+    });
+  </script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --primary:#0ea5a5;--primary-dark:#0d8a8a;--primary-light:#14b8a6;
+  --bg:#fff;--fg:#1e293b;--muted:#64748b;--muted-bg:#f1f5f9;
+  --border:#e2e8f0;--secondary-bg:#e6faf8;--secondary-fg:#0d6e6e;
+  --danger:#ef4444;--danger-bg:#fef2f2;
+  --success:#16a34a;--success-bg:#f0fdf4;
+  --warn:#d97706;--warn-bg:#fffbeb;
+  --purple:#7c3aed;--purple-bg:#ede9fe;
+  --blue:#2563eb;--blue-bg:#eff6ff;
+  --rad:12px;--rad-sm:8px;
+}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--fg);background:var(--bg);line-height:1.6;}
+.font-display{font-family:'Poppins',system-ui,sans-serif;}
+.container{max-width:1100px;margin:0 auto;padding:0 20px;}
+a{text-decoration:none;color:inherit;}
+.hide{display:none!important;}
+
+/* NAVBAR */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.navbar .container{display:flex;align-items:center;justify-content:space-between;height:64px;}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo-icon{width:36px;height:36px;background:var(--primary);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-weight:700;font-size:14px;}
+.logo-text{font-family:'Poppins';font-weight:700;font-size:20px;}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-links a{color:var(--muted);font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--fg);}
+.nav-auth{display:flex;gap:10px;align-items:center;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:var(--rad-sm);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-primary{background:var(--primary);color:#fff;}.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--fg);}.btn-ghost:hover{background:var(--muted-bg);}
+.btn-secondary{background:var(--secondary-bg);color:var(--secondary-fg);}.btn-secondary:hover{background:#d0f0ed;}
+.btn-outline-white{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;}.btn-outline-white:hover{background:rgba(255,255,255,0.12);}
+.btn-white{background:#fff;color:var(--secondary-fg);}.btn-white:hover{background:#f0fdfa;}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border:1.5px solid #fecaca;}.btn-danger:hover{background:#fee2e2;}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn-full{width:100%;justify-content:center;}
+.btn-lg{padding:13px 28px;font-size:15px;border-radius:var(--rad);}
+
+/* PAGES */
+.page{display:none;}.page.active{display:block;}
+
+/* ── LANDING ── */
+.hero{padding-top:64px;background:linear-gradient(135deg,#0ea5a5 0%,#34d399 55%,#6ee7b7 100%);color:#fff;text-align:center;min-height:88vh;display:flex;align-items:center;justify-content:center;}
+.hero-inner{padding:80px 20px;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,0.18);backdrop-filter:blur(8px);border-radius:999px;padding:8px 22px;font-size:14px;font-weight:500;margin-bottom:28px;}
+.hero h1{font-family:'Poppins';font-weight:800;font-size:clamp(36px,6vw,68px);line-height:1.1;max-width:700px;margin:0 auto 20px;}
+.hero p{font-size:18px;opacity:.88;max-width:560px;margin:0 auto 36px;}
+.hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.hero-stats{border-top:1px solid rgba(255,255,255,.22);margin-top:64px;padding-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:560px;margin-left:auto;margin-right:auto;}
+.stat-value{font-family:'Poppins';font-weight:700;font-size:clamp(28px,4vw,42px);}
+.stat-label{font-size:13px;opacity:.72;margin-top:4px;}
+.section{padding:96px 20px;}.section-alt{background:var(--muted-bg);}
+.section-label{color:var(--primary);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.section-title{font-family:'Poppins';font-weight:700;font-size:clamp(26px,4vw,38px);margin-bottom:14px;}
+.section-desc{color:var(--muted);max-width:580px;font-size:15px;margin-bottom:48px;}
+.text-center{text-align:center;}.mx-auto{margin-left:auto;margin-right:auto;}
+.about-text{color:var(--muted);max-width:720px;margin-bottom:40px;font-size:15px;}
+.about-text p{margin-bottom:14px;}
+.highlights{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:48px;}
+.highlight{display:flex;align-items:flex-start;gap:12px;padding:18px;border-radius:var(--rad);background:var(--secondary-bg);}
+.highlight-title{font-weight:600;font-size:15px;}.highlight-desc{font-size:13px;color:var(--muted);}
+.cta-banner{background:linear-gradient(135deg,#0ea5a5,#34d399);border-radius:16px;padding:48px;text-align:center;color:#fff;}
+.cta-banner .big{font-family:'Poppins';font-weight:800;font-size:44px;}
+.cta-banner h3{font-family:'Poppins';font-weight:700;font-size:22px;margin-top:16px;}
+.cta-banner p{opacity:.82;margin-top:8px;font-size:15px;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.feature-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:28px;transition:all .3s;}
+.feature-card:hover{border-color:rgba(14,165,165,.45);box-shadow:0 8px 30px rgba(14,165,165,.09);}
+.feature-icon{width:44px;height:44px;border-radius:10px;background:var(--secondary-bg);display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:var(--primary);font-size:20px;}
+.feature-card h3{font-weight:600;font-size:16px;margin-bottom:8px;}
+.feature-card p{font-size:14px;color:var(--muted);}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:32px;margin-bottom:64px;}
+.step{text-align:center;}
+.step-num{font-family:'Poppins';font-weight:700;font-size:48px;color:rgba(14,165,165,.2);margin-bottom:12px;}
+.step-icon{width:56px;height:56px;border-radius:50%;background:rgba(14,165,165,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--primary);font-size:24px;}
+.step h3{font-weight:600;font-size:18px;margin-bottom:8px;}
+.step p{font-size:14px;color:var(--muted);}
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
+.benefit-card{border:1px solid var(--border);border-radius:var(--rad);padding:32px;}
+.benefit-card h3{font-family:'Poppins';font-weight:700;font-size:20px;margin-bottom:6px;}
+.benefit-card>p{font-size:14px;color:var(--muted);margin-bottom:20px;}
+.benefit-card ul{list-style:none;}
+.benefit-card li{display:flex;align-items:center;gap:10px;font-size:14px;padding:5px 0;}
+.benefit-card li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--primary);flex-shrink:0;}
+.team-guide{border:1px solid var(--border);border-radius:var(--rad);padding:40px;text-align:center;margin-bottom:24px;}
+.team-avatar{width:64px;height:64px;border-radius:50%;background:rgba(14,165,165,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Poppins';font-weight:700;color:var(--primary);font-size:18px;}
+.team-guide h3{font-weight:600;font-size:18px;}.team-guide .role{color:var(--primary);font-size:14px;font-weight:500;margin-top:4px;}
+.team-guide p:last-child{font-size:14px;color:var(--muted);margin-top:8px;max-width:450px;margin-left:auto;margin-right:auto;}
+.team-members{border:1px solid var(--border);border-radius:var(--rad);padding:40px;text-align:center;}
+.team-members h3{font-weight:600;margin-bottom:4px;}.team-members>p{font-size:14px;color:var(--muted);margin-bottom:32px;}
+.members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:24px;}
+.member{text-align:center;}
+.member-avatar{width:48px;height:48px;border-radius:50%;background:var(--secondary-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-weight:600;font-size:14px;color:var(--secondary-fg);}
+.member-name{font-weight:500;font-size:14px;}.member-id{font-size:12px;color:var(--muted);margin-top:2px;}
+footer{background:var(--fg);color:rgba(255,255,255,.6);padding:48px 20px;text-align:center;}
+footer p{font-size:14px;max-width:420px;margin:12px auto 24px;}
+footer .links{display:flex;justify-content:center;gap:24px;font-size:14px;margin-bottom:32px;flex-wrap:wrap;}
+footer .links a:hover{color:#fff;}.footer-copy{font-size:12px;opacity:.5;}
+
+/* ── AUTH ── */
+.auth-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--muted-bg);}
+.auth-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:2.4rem;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(0,0,0,.06);}
+.auth-card h2{font-family:'Poppins';font-weight:700;font-size:26px;margin-bottom:6px;}
+.auth-card .sub{font-size:14px;color:var(--muted);margin-bottom:1.8rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--rad-sm);font-family:'Inter',sans-serif;font-size:14px;color:var(--fg);background:var(--bg);outline:none;transition:border-color .15s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary);}
+.auth-switch{margin-top:1.2rem;text-align:center;font-size:13px;color:var(--muted);}
+.auth-switch a{color:var(--primary);cursor:pointer;font-weight:600;}
+.error-msg{background:var(--danger-bg);border:1px solid #fecaca;color:var(--danger);border-radius:var(--rad-sm);padding:9px 13px;font-size:13px;margin-bottom:14px;display:none;}
+
+/* ── DASHBOARD ── */
+.dash-wrapper{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);}
+.sidebar{background:var(--bg);border-right:1px solid var(--border);padding:1.4rem 1rem;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;}
+.sidebar-profile{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--secondary-bg);border-radius:var(--rad-sm);margin-bottom:1.5rem;}
+.s-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+.s-name{font-size:13px;font-weight:600;}.s-edu{font-size:11px;color:var(--muted);}
+.nav-section{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:0 12px;margin:1rem 0 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rad-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s;margin-bottom:2px;}
+.nav-item:hover{background:var(--muted-bg);color:var(--fg);}
+.nav-item.active{background:var(--primary);color:#fff;}
+.dash-main{padding:2rem;max-width:980px;}
+.page-head{margin-bottom:1.8rem;}
+.page-head h2{font-family:'Poppins';font-weight:700;font-size:24px;margin-bottom:4px;}
+.page-head p{font-size:14px;color:var(--muted);}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:1.8rem;}
+.metric-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:1.1rem 1.2rem;}
+.metric-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.metric-val{font-family:'Poppins';font-weight:700;font-size:28px;color:var(--fg);line-height:1;}
+.metric-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+.card-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:1.4rem;margin-bottom:1.4rem;}
+.card-box h3{font-weight:600;font-size:16px;margin-bottom:4px;}
+.card-box .sub{font-size:13px;color:var(--muted);margin-bottom:1rem;}
+
+/* SKILLS */
+.skill-input-row{display:flex;gap:8px;margin-bottom:12px;}
+.skill-input-row input{flex:1;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rad-sm);font-size:13px;font-family:'Inter';outline:none;}
+.skill-input-row input:focus{border-color:var(--primary);}
+.skill-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:28px;}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--secondary-bg);border:1px solid rgba(14,165,165,.2);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;color:var(--secondary-fg);}
+.chip .rm{cursor:pointer;opacity:.6;font-size:15px;transition:opacity .15s;}.chip .rm:hover{opacity:1;color:var(--danger);}
+.quick-adds{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;align-items:center;}
+.q-tag{font-size:12px;padding:4px 12px;border-radius:20px;background:var(--muted-bg);border:1px solid var(--border);cursor:pointer;font-weight:500;transition:all .15s;}
+.q-tag:hover{background:var(--secondary-bg);border-color:rgba(14,165,165,.3);color:var(--secondary-fg);}
+
+/* CAREER OPTIONS */
+.career-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;}
+.career-opt{border:1.5px solid var(--border);border-radius:var(--rad-sm);padding:14px;cursor:pointer;transition:all .18s;background:var(--bg);}
+.career-opt:hover{border-color:var(--primary);background:var(--secondary-bg);}
+.career-opt.selected{border-color:var(--primary);background:var(--secondary-bg);}
+.career-opt-icon{font-size:22px;margin-bottom:6px;}.career-opt-name{font-size:13px;font-weight:600;}.career-opt-domain{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* RESULTS */
+.results-header{font-family:'Poppins';font-weight:700;font-size:20px;margin-bottom:1.2rem;}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:1.4rem;}
+.compare-card{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rad);padding:1.4rem;position:relative;}
+.compare-card.winner{border-color:var(--primary);}
+.winner-badge{position:absolute;top:12px;right:12px;background:var(--primary);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.c-domain{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.c-name{font-family:'Poppins';font-weight:700;font-size:18px;margin-bottom:14px;}
+.prob-row{display:flex;align-items:baseline;gap:3px;}
+.prob-big{font-family:'Poppins';font-weight:800;font-size:42px;line-height:1;color:var(--fg);}
+.prob-pct{font-size:18px;color:var(--muted);}
+.prob-label{font-size:12px;color:var(--muted);margin-top:2px;}
+.prog-bar{height:5px;background:var(--muted-bg);border-radius:10px;margin:10px 0 14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:10px;background:var(--primary);transition:width .9s cubic-bezier(.4,0,.2,1);}
+.prog-fill.alt{background:#6366f1;}.prog-fill.alt2{background:#f59e0b;}
+.c-meta{display:flex;flex-direction:column;gap:6px;}
+.c-meta-row{display:flex;justify-content:space-between;font-size:12px;}
+.c-meta-key{color:var(--muted);}.c-meta-val{font-weight:600;}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;}
+.tag-green{background:var(--success-bg);color:var(--success);}
+.tag-amber{background:var(--warn-bg);color:var(--warn);}
+.tag-red{background:var(--danger-bg);color:var(--danger);}
+.tag-teal{background:var(--secondary-bg);color:var(--secondary-fg);}
+.tag-gray{background:var(--muted-bg);color:var(--muted);}
+.tag-purple{background:var(--purple-bg);color:var(--purple);}
+.tag-blue{background:var(--blue-bg);color:var(--blue);}
+
+/* OUTCOME */
+.outcome-box{background:linear-gradient(135deg,#0ea5a5,#34d399);border-radius:var(--rad);padding:1.6rem;color:#fff;margin-bottom:1.4rem;}
+.outcome-box h3{font-family:'Poppins';font-weight:700;font-size:17px;margin-bottom:8px;}
+.outcome-box p{font-size:14px;opacity:.92;line-height:1.65;}
+.outcome-hl{font-size:22px;font-weight:800;color:#fff;}
+
+/* SKILL GAP TABLE */
+.gap-table{width:100%;border-collapse:collapse;}
+.gap-table th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:7px 10px;border-bottom:1px solid var(--border);}
+.gap-table td{padding:9px 10px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.gap-table tr:last-child td{border-bottom:none;}
+.gap-table tr:hover td{background:var(--muted-bg);}
+.skill-dot{display:flex;align-items:center;gap:8px;}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-g{background:var(--success);}.dot-r{background:var(--danger);}
+
+/* ROADMAP */
+.roadmap-step{display:flex;gap:14px;margin-bottom:1rem;}
+.rm-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.rm-circle{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.rm-line{flex:1;width:1.5px;background:var(--border);margin-top:4px;}
+.rm-body{flex:1;padding-bottom:1rem;}
+.rm-body h4{font-size:13px;font-weight:600;margin-bottom:3px;}
+.rm-body p{font-size:12px;color:var(--muted);}
+.rm-time{font-size:11px;color:var(--primary);font-weight:600;margin-top:3px;}
+
+/* MARKET */
+.market-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:1.3rem;margin-bottom:14px;}
+.market-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.market-card-title{font-size:15px;font-weight:600;}
+.demand-item{margin-bottom:8px;}
+.demand-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;}
+.demand-bar{height:6px;background:var(--muted-bg);border-radius:10px;overflow:hidden;}
+.demand-fill{height:100%;background:var(--primary);border-radius:10px;}
+.market-trends{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.market-trend{font-size:11px;color:var(--muted);background:var(--muted-bg);padding:4px 10px;border-radius:20px;}
+.market-salary{font-size:13px;color:var(--primary);font-weight:600;margin-top:10px;}
+
+/* PROFILE */
+.profile-avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:1.6rem;}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--primary);color:#fff;font-family:'Poppins';font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+
+/* ════════════════════════════════
+   NEW FEATURES STYLES
+════════════════════════════════ */
+
+/* CHART CONTAINERS */
+.chart-wrap{position:relative;width:100%;}
+.chart-wrap canvas{max-width:100%;}
+
+/* SKILL GAP CHART SECTION */
+.gap-chart-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:1.4rem;margin-bottom:1.4rem;}
+.gap-chart-section h3{font-weight:600;font-size:16px;margin-bottom:4px;}
+.gap-chart-section .sub{font-size:13px;color:var(--muted);margin-bottom:1.2rem;}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.chart-block h4{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+
+/* DYNAMIC SCORE TRACKER */
+.score-tracker{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:1.4rem;margin-bottom:1.4rem;}
+.score-tracker h3{font-weight:600;font-size:16px;margin-bottom:4px;}
+.score-tracker .sub{font-size:13px;color:var(--muted);margin-bottom:1.2rem;}
+.score-toggle-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.2rem;}
+.score-toggle{padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;background:var(--bg);transition:all .15s;}
+.score-toggle.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.score-dial-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.2rem;}
+.score-dial{text-align:center;padding:1rem;border:1px solid var(--border);border-radius:var(--rad);position:relative;}
+.score-dial-ring{width:80px;height:80px;margin:0 auto 8px;position:relative;}
+.score-dial-ring svg{width:80px;height:80px;}
+.dial-track{fill:none;stroke:var(--border);stroke-width:8;}
+.dial-fill{fill:none;stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:40px 40px;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);}
+.dial-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Poppins';font-weight:700;font-size:16px;}
+.dial-label{font-size:12px;font-weight:600;color:var(--fg);}
+.dial-change{font-size:11px;margin-top:2px;}
+.score-line-chart{height:220px;}
+
+/* TIME TO READY */
+.time-ready-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:1.4rem;margin-bottom:1.4rem;}
+.time-ready-section h3{font-weight:600;font-size:16px;margin-bottom:4px;}
+.time-ready-section .sub{font-size:13px;color:var(--muted);margin-bottom:1.2rem;}
+.time-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1.4rem;}
+.time-card{border:1px solid var(--border);border-radius:var(--rad);padding:1.1rem;position:relative;overflow:hidden;}
+.time-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.time-card.tc-primary::before{background:var(--primary);}
+.time-card.tc-purple::before{background:var(--purple);}
+.time-card.tc-amber::before{background:var(--warn);}
+.time-card-icon{font-size:24px;margin-bottom:8px;}
+.time-card-career{font-size:12px;color:var(--muted);font-weight:500;}
+.time-card-months{font-family:'Poppins';font-weight:800;font-size:32px;line-height:1;margin:4px 0;}
+.time-card-unit{font-size:12px;color:var(--muted);}
+.time-card-date{font-size:11px;color:var(--primary);font-weight:600;margin-top:6px;}
+.time-breakdown{background:var(--muted-bg);border-radius:var(--rad);padding:1.2rem;}
+.time-breakdown h4{font-size:13px;font-weight:600;margin-bottom:12px;}
+.time-phase{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.time-phase:last-child{margin-bottom:0;}
+.phase-bar-wrap{flex:1;}
+.phase-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;}
+.phase-bar{height:8px;background:var(--border);border-radius:10px;overflow:hidden;}
+.phase-fill{height:100%;border-radius:10px;transition:width .8s ease;}
+
+/* SMART RESOURCE NAVIGATOR */
+.resource-section{background:var(--bg);border:1px solid var(--border);border-radius:var(--rad);padding:1.4rem;margin-bottom:1.4rem;}
+.resource-section h3{font-weight:600;font-size:16px;margin-bottom:4px;}
+.resource-section .sub{font-size:13px;color:var(--muted);margin-bottom:1.2rem;}
+.resource-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.2rem;}
+.res-filter{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;background:var(--bg);transition:all .15s;}
+.res-filter.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.resource-career-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.2rem;border-bottom:1px solid var(--border);padding-bottom:12px;}
+.res-career-tab{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.res-career-tab.active{background:var(--secondary-bg);color:var(--secondary-fg);border-color:rgba(14,165,165,.4);}
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.resource-card{border:1px solid var(--border);border-radius:var(--rad);padding:14px;transition:all .18s;cursor:pointer;}
+.resource-card:hover{border-color:var(--primary);box-shadow:0 4px 16px rgba(14,165,165,.1);}
+.resource-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.resource-type-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;}
+.rt-course{background:#eff6ff;color:#2563eb;}
+.rt-cert{background:var(--purple-bg);color:var(--purple);}
+.rt-practice{background:var(--warn-bg);color:var(--warn);}
+.rt-free{background:var(--success-bg);color:var(--success);}
+.resource-free-badge{font-size:10px;font-weight:700;color:var(--success);background:var(--success-bg);padding:2px 8px;border-radius:20px;}
+.resource-card h4{font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.4;}
+.resource-card-skill{font-size:11px;color:var(--primary);font-weight:600;margin-bottom:6px;}
+.resource-card-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.resource-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.resource-platform{font-size:11px;color:var(--muted);font-weight:500;}
+.resource-duration{font-size:11px;color:var(--muted);}
+.resource-link{font-size:12px;color:var(--primary);font-weight:600;}
+.resource-link:hover{text-decoration:underline;}
+.no-resources{text-align:center;padding:2rem;color:var(--muted);font-size:13px;}
+
+/* TOAST / LOADING */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--fg);color:#fff;padding:12px 20px;border-radius:var(--rad-sm);font-size:13px;font-weight:500;transform:translateY(80px);opacity:0;transition:all .28s cubic-bezier(.4,0,.2,1);pointer-events:none;max-width:300px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.88);backdrop-filter:blur(4px);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.loading-overlay.show{display:flex;}
+.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:14px;color:var(--muted);font-weight:500;}
+.empty-state{text-align:center;padding:3rem;color:var(--muted);}
+.empty-state .icon{font-size:44px;margin-bottom:14px;}
+.empty-state p{font-size:14px;margin-bottom:1rem;}
+
+/* ADMIN */
+.adm-user-row:hover td{background:var(--muted-bg);}
+.adm-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--purple-bg);color:var(--purple);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp .45s ease forwards;}
+.d1{animation-delay:.08s;}.d2{animation-delay:.16s;}.d3{animation-delay:.24s;}
+
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .dash-wrapper{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .compare-grid,.chart-grid,.time-cards{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .score-dial-row{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <div class="logo" onclick="goHome()">
+      <span class="logo-icon">CV</span>
+      <span class="logo-text font-display">CareerVista</span>
+    </div>
+    <div class="nav-links" id="nav-landing-links">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#team">Team</a>
+      <button class="btn btn-ghost" style="padding:8px 16px" onclick="showPage('login')">Log in</button>
+      <button class="btn btn-primary" onclick="showPage('signup')">Get Started</button>
+    </div>
+    <div class="nav-auth hide" id="nav-user-links">
+      <span style="font-size:13px;color:var(--muted)" id="nav-username"></span>
+      <button class="btn btn-ghost" style="padding:8px 16px" onclick="logout()">Log out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="loading-overlay" id="loading"><div class="spinner"></div><div class="loading-text" id="loading-text">Analyzing career paths...</div></div>
+<div class="toast" id="toast"></div>
+
+<!-- ══ LANDING ══ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-badge">&#10022; Academic Innovation Project</span>
+      <h1 class="font-display fade-up">Explore Career Paths<br>Before You Choose</h1>
+      <p class="fade-up d1">A smarter way for students to understand job readiness, skill requirements, and career outcomes before making decisions.</p>
+      <div class="hero-buttons fade-up d2">
+        <button class="btn btn-white btn-lg" onclick="showPage('signup')">Get Started Free &rarr;</button>
+        <button class="btn btn-outline-white btn-lg" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">View Features</button>
+      </div>
+      <div class="hero-stats fade-up d3">
+        <div><div class="stat-value font-display">50+</div><div class="stat-label">Career Paths</div></div>
+        <div><div class="stat-value font-display">100+</div><div class="stat-label">Skills Analyzed</div></div>
+        <div><div class="stat-value font-display">Real</div><div class="stat-label">Market Data</div></div>
+      </div>
+    </div>
+  </section>
+  <section id="about" class="section">
+    <div class="container">
+      <div class="section-label">About CareerVista</div>
+      <h2 class="section-title font-display">Making Career Decisions Clear and Confident</h2>
+      <div class="about-text">
+        <p>Students often choose careers based on trends, peer influence, or incomplete information — leading to skill mismatches and uncertainty about job readiness. CareerVista changes that.</p>
+        <p>Our platform helps students evaluate multiple career paths using employability insights, skill gap identification, preparation timelines, and market trends.</p>
+        <p>By combining career simulation with guided learning, CareerVista empowers students to understand exactly where they stand and what they need to do next.</p>
+      </div>
+      <div class="highlights">
+        <div class="highlight"><div><div class="highlight-title">Focused</div><div class="highlight-desc">Outcome-based guidance</div></div></div>
+        <div class="highlight"><div><div class="highlight-title">Current</div><div class="highlight-desc">Real market trends</div></div></div>
+        <div class="highlight"><div><div class="highlight-title">Personal</div><div class="highlight-desc">Tailored for you</div></div></div>
+        <div class="highlight"><div><div class="highlight-title">Practical</div><div class="highlight-desc">Skill gap analysis</div></div></div>
+      </div>
+      <div class="cta-banner">
+        <div class="big font-display">CV</div>
+        <h3 class="font-display">Youth Employability Simulation Engine</h3>
+        <p>Providing outcome-based and data-driven career decision support</p>
+      </div>
+    </div>
+  </section>
+  <section id="features" class="section section-alt">
+    <div class="container">
+      <div class="section-label text-center">Key Features</div>
+      <h2 class="section-title font-display text-center">Everything You Need for Smart Career Planning</h2>
+      <p class="section-desc text-center mx-auto">Comprehensive tools designed to help you make informed decisions about your future.</p>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">&#9776;</div><h3>Career Simulation Engine</h3><p>Explore different career roles and understand what each path truly demands before committing.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#9733;</div><h3>Employability Probability Score</h3><p>Get a clear percentage-based indicator of your job readiness for any career path.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#128269;</div><h3>Skill Gap Identification</h3><p>Pinpoint exactly which skills you're missing or need to strengthen for your target career.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#9200;</div><h3>Learning Time Estimation</h3><p>Understand how long it will realistically take to become job-ready in your chosen field.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#9888;</div><h3>Career Risk Analysis</h3><p>Identify competition levels, market saturation, and potential risks in different career paths.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#8644;</div><h3>Career Comparison Module</h3><p>Evaluate multiple careers side-by-side to find the best fit for your goals and abilities.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#8593;</div><h3>Market Demand Insights</h3><p>Stay updated with trending roles, emerging technologies, and in-demand skills.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#9638;</div><h3>Personalized Dashboard</h3><p>Track your learning progress, skill improvements, and growing employability over time.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#128218;</div><h3>Smart Resource Navigator</h3><p>Get curated courses, certifications, practice platforms and free resources for every skill gap.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#127919;</div><h3>Outcome-Based Guidance</h3><p>Focus on actual results and career outcomes, not just general suggestions.</p></div>
+      </div>
+    </div>
+  </section>
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <div class="section-label text-center">How It Works</div>
+      <h2 class="section-title font-display text-center">Three Simple Steps to Career Clarity</h2>
+      <p class="section-desc text-center mx-auto">Getting started with CareerVista is straightforward and designed with students in mind.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num font-display">Step 01</div><div class="step-icon">&#128100;</div><h3>Enter Your Background</h3><p>Share your academic background, current skills, and career interests.</p></div>
+        <div class="step"><div class="step-num font-display">Step 02</div><div class="step-icon">&#8644;</div><h3>Simulate &amp; Compare</h3><p>Explore different career options, compare their requirements, and see how you match up.</p></div>
+        <div class="step"><div class="step-num font-display">Step 03</div><div class="step-icon">&#8593;</div><h3>Follow &amp; Track Progress</h3><p>Get structured learning guidance and track your improvement over time.</p></div>
+      </div>
+      <div class="benefits-grid">
+        <div class="benefit-card"><h3 class="font-display">Why CareerVista Stands Out</h3><p>Unlike generic career guidance, we focus on measurable outcomes and practical planning.</p><ul><li>Shows job readiness level</li><li>Identifies exact skills to improve</li><li>Helps plan realistic preparation time</li><li>Uses current market trends</li><li>Supports informed decision-making</li></ul></div>
+        <div class="benefit-card"><h3 class="font-display">Student Benefits</h3><p>Designed specifically to address the challenges students face during career planning.</p><ul><li>Reduces career confusion</li><li>Helps choose the right path</li><li>Saves preparation time</li><li>Improves employability focus</li><li>Encourages structured learning</li></ul></div>
+      </div>
+    </div>
+  </section>
+  <section id="team" class="section section-alt">
+    <div class="container">
+      <div class="section-label text-center">Project Team</div>
+      <h2 class="section-title font-display text-center">Meet the Team Behind CareerVista</h2>
+      <p class="section-desc text-center mx-auto">An academic innovation project developed with dedication and expertise.</p>
+      <div class="team-guide">
+        <div class="team-avatar">KPR</div>
+        <h3>Mr. K. Prudvi Raj</h3><div class="role">Assistant Professor</div>
+        <p>Project Guide ensuring academic quality and real-world relevance throughout the development process.</p>
+      </div>
+      <div class="team-members">
+        <h3>Batch No: 03 &mdash; Development Team</h3>
+        <p>Contributing to system design, employability analysis, career comparison modules, and user-focused interface planning.</p>
+        <div class="members-grid">
+          <div class="member"><div class="member-avatar">BP</div><div class="member-name">B. Praveena Reddy</div><div class="member-id">24B61A0513</div></div>
+          <div class="member"><div class="member-avatar">GS</div><div class="member-name">G. Sai Karthik Reddy</div><div class="member-id">24B61A0529</div></div>
+          <div class="member"><div class="member-avatar">CS</div><div class="member-name">Ch. Sanjay</div><div class="member-id">24B61A0515</div></div>
+          <div class="member"><div class="member-avatar">HB</div><div class="member-name">H. Bindhu</div><div class="member-id">24B61A0532</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px;">
+        <span class="logo-icon">CV</span>
+        <span class="font-display" style="color:#fff;font-weight:700;font-size:18px;">CareerVista</span>
+      </div>
+      <p>Youth Employability Simulation Engine &mdash; helping students make confident, data-driven career decisions.</p>
+      <div class="links"><a href="#about">About</a><a href="#features">Features</a><a href="#how-it-works">How It Works</a><a href="#team">Team</a></div>
+      <div class="footer-copy">&copy; 2025 CareerVista. Academic Innovation Project.</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2 class="font-display">Welcome back</h2>
+      <p class="sub">Log in to your CareerVista dashboard</p>
+      <div class="error-msg" id="login-err"></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="l-email" placeholder="you@example.com"/></div>
+      <div class="form-group"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="btn btn-primary btn-full" style="margin-top:6px" onclick="doLogin()">Log In</button>
+      <div class="auth-switch" style="margin-top:10px"><a onclick="showForgotPassword()" style="color:var(--muted);font-size:13px">🔑 Forgot Password?</a></div>
+      <div class="auth-switch">Don't have an account? <a onclick="showPage('signup')">Sign up free</a></div>
+      <div class="auth-switch" style="margin-top:6px"><a onclick="showPage('home')">&#8592; Back to home</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SIGNUP ══ -->
+<div class="page" id="page-signup">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2 class="font-display">Create your account</h2>
+      <p class="sub">Start your career simulation in minutes</p>
+      <div class="error-msg" id="signup-err"></div>
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" id="s-fname" placeholder="Riya"/></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="s-lname" placeholder="Sharma"/></div>
+      </div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="s-email" placeholder="you@example.com"/></div>
+      <div class="form-group"><label>Education Level</label>
+        <select id="s-edu"><option value="">Select your level</option><option>1st Year B.Tech / B.E.</option><option>2nd Year B.Tech / B.E.</option><option>3rd Year B.Tech / B.E.</option><option>Final Year B.Tech / B.E.</option><option>B.Sc / BCA</option><option>M.Tech / MCA / M.Sc</option><option>MBA</option><option>Other</option></select>
+      </div>
+      <div class="form-group"><label>Password</label><input type="password" id="s-pass" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()"/></div>
+      <button class="btn btn-primary btn-full" style="margin-top:6px" onclick="doSignup()">Create Account</button>
+      <div class="auth-switch">Already have an account? <a onclick="showPage('login')">Log in</a></div>
+      <div class="auth-switch" style="margin-top:6px"><a onclick="showPage('home')">&#8592; Back to home</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FORGOT PASSWORD MODAL ══ -->
+<div id="forgot-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:#fff;border-radius:20px;padding:2.2rem;width:100%;max-width:420px;margin:20px;box-shadow:0 24px 80px rgba(0,0,0,0.22);position:relative;">
+
+    <!-- Progress dots -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:1.6rem;" id="fp-dots">
+      <div id="fp-dot-1" style="width:28px;height:6px;border-radius:3px;background:var(--primary);transition:all .3s;"></div>
+      <div id="fp-dot-2" style="width:6px;height:6px;border-radius:3px;background:var(--border);transition:all .3s;"></div>
+      <div id="fp-dot-3" style="width:6px;height:6px;border-radius:3px;background:var(--border);transition:all .3s;"></div>
+    </div>
+
+    <!-- STEP 1: Enter Email -->
+    <div id="fp-step-1">
+      <div style="text-align:center;margin-bottom:1.4rem;">
+        <div style="width:54px;height:54px;border-radius:50%;background:var(--secondary-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;">📧</div>
+        <h3 style="font-family:'Poppins';font-weight:700;font-size:20px;margin-bottom:6px;">Forgot Password?</h3>
+        <p style="font-size:13px;color:var(--muted);">No worries! Enter your email and we'll send you a verification code.</p>
+      </div>
+      <div id="fp-err-1" style="background:var(--danger-bg);border:1px solid #fecaca;color:var(--danger);border-radius:var(--rad-sm);padding:9px 13px;font-size:13px;margin-bottom:12px;display:none;"></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="fp-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')fpStep1()"/></div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-primary btn-full" onclick="fpStep1()">Send Verification Code</button>
+      </div>
+      <div style="text-align:center;margin-top:12px;"><a onclick="closeForgotPassword()" style="font-size:13px;color:var(--muted);cursor:pointer;">← Back to Login</a></div>
+    </div>
+
+    <!-- STEP 2: Enter OTP Code -->
+    <div id="fp-step-2" style="display:none;">
+      <div style="text-align:center;margin-bottom:1.4rem;">
+        <div style="width:54px;height:54px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;" id="fp-step2-icon">📨</div>
+        <h3 style="font-family:'Poppins';font-weight:700;font-size:20px;margin-bottom:6px;">Check Your Email</h3>
+        <p style="font-size:13px;color:var(--muted);" id="fp-sent-msg">We've sent a 6-digit code to <strong></strong></p>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px;">Check your inbox (and spam folder just in case).</p>
+      </div>
+      <div id="fp-err-2" style="background:var(--danger-bg);border:1px solid #fecaca;color:var(--danger);border-radius:var(--rad-sm);padding:9px 13px;font-size:13px;margin-bottom:12px;display:none;"></div>
+      <!-- OTP Input -->
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:1rem;" id="otp-inputs">
+        <input type="text" maxlength="1" class="otp-box" id="otp-0" oninput="otpNext(0)" onkeydown="otpBack(event,0)" style="width:48px;height:54px;text-align:center;font-family:'Poppins';font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;outline:none;transition:border-color .15s;color:var(--fg);" />
+        <input type="text" maxlength="1" class="otp-box" id="otp-1" oninput="otpNext(1)" onkeydown="otpBack(event,1)" style="width:48px;height:54px;text-align:center;font-family:'Poppins';font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;outline:none;transition:border-color .15s;color:var(--fg);" />
+        <input type="text" maxlength="1" class="otp-box" id="otp-2" oninput="otpNext(2)" onkeydown="otpBack(event,2)" style="width:48px;height:54px;text-align:center;font-family:'Poppins';font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;outline:none;transition:border-color .15s;color:var(--fg);" />
+        <input type="text" maxlength="1" class="otp-box" id="otp-3" oninput="otpNext(3)" onkeydown="otpBack(event,3)" style="width:48px;height:54px;text-align:center;font-family:'Poppins';font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;outline:none;transition:border-color .15s;color:var(--fg);" />
+        <input type="text" maxlength="1" class="otp-box" id="otp-4" oninput="otpNext(4)" onkeydown="otpBack(event,4)" style="width:48px;height:54px;text-align:center;font-family:'Poppins';font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;outline:none;transition:border-color .15s;color:var(--fg);" />
+        <input type="text" maxlength="1" class="otp-box" id="otp-5" oninput="otpNext(5)" onkeydown="otpBack(event,5)" style="width:48px;height:54px;text-align:center;font-family:'Poppins';font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;outline:none;transition:border-color .15s;color:var(--fg);" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="fpStep2()">Verify Code</button>
+      <div style="text-align:center;margin-top:12px;">
+        <a onclick="fpResend()" style="font-size:13px;color:var(--primary);cursor:pointer;font-weight:600;">Resend Code</a>
+        <span style="color:var(--muted);font-size:13px;"> · </span>
+        <a onclick="fpGoBack(1)" style="font-size:13px;color:var(--muted);cursor:pointer;">Change Email</a>
+      </div>
+    </div>
+
+    <!-- STEP 3: New Password -->
+    <div id="fp-step-3" style="display:none;">
+      <div style="text-align:center;margin-bottom:1.4rem;">
+        <div style="width:54px;height:54px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;">🔒</div>
+        <h3 style="font-family:'Poppins';font-weight:700;font-size:20px;margin-bottom:6px;">Set New Password</h3>
+        <p style="font-size:13px;color:var(--muted);">Choose a strong new password for your account.</p>
+      </div>
+      <div id="fp-err-3" style="background:var(--danger-bg);border:1px solid #fecaca;color:var(--danger);border-radius:var(--rad-sm);padding:9px 13px;font-size:13px;margin-bottom:12px;display:none;"></div>
+      <div class="form-group">
+        <label>New Password</label>
+        <div style="position:relative;">
+          <input type="password" id="fp-new-pass" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')fpStep3()" style="padding-right:42px;"/>
+          <span onclick="fpTogglePass('fp-new-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;color:var(--muted);">👁</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <input type="password" id="fp-conf-pass" placeholder="Re-enter password" onkeydown="if(event.key==='Enter')fpStep3()"/>
+      </div>
+      <!-- Password strength -->
+      <div id="fp-strength-wrap" style="margin-bottom:14px;display:none;">
+        <div style="display:flex;gap:4px;margin-bottom:4px;">
+          <div id="ps-1" style="flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .2s;"></div>
+          <div id="ps-2" style="flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .2s;"></div>
+          <div id="ps-3" style="flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .2s;"></div>
+          <div id="ps-4" style="flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .2s;"></div>
+        </div>
+        <div id="ps-label" style="font-size:11px;color:var(--muted);font-weight:600;"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="fpStep3()">Reset Password</button>
+    </div>
+
+    <!-- STEP 4: Success -->
+    <div id="fp-step-4" style="display:none;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:30px;">✅</div>
+      <h3 style="font-family:'Poppins';font-weight:700;font-size:22px;margin-bottom:8px;">Password Reset!</h3>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:1.6rem;">Your password has been updated successfully. You can now log in with your new password.</p>
+      <button class="btn btn-primary btn-full" onclick="closeForgotPassword()">Back to Login</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ ADMIN PANEL ══ -->
+<div class="page" id="page-admin">
+  <div style="min-height:100vh;background:var(--muted-bg);padding-top:64px;">
+    <div style="background:#fff;border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:64px;z-index:50;display:flex;align-items:center;justify-content:space-between;height:52px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="background:#7c3aed;color:#fff;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Admin</span>
+        <span style="font-family:'Poppins';font-weight:700;font-size:15px;">CareerVista Admin Panel</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="adminLogout()">Log Out</button>
+    </div>
+    <div style="max-width:1100px;margin:0 auto;padding:2rem 20px;">
+      <!-- Stats Row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:2rem;">
+        <div class="metric-card"><div class="metric-label">Total Users</div><div class="metric-val" id="adm-total-users">0</div><div class="metric-sub">Registered accounts</div></div>
+        <div class="metric-card"><div class="metric-label">Simulations Run</div><div class="metric-val" id="adm-total-sims">0</div><div class="metric-sub">Across all users</div></div>
+        <div class="metric-card"><div class="metric-label">Skills Tracked</div><div class="metric-val" id="adm-total-skills">0</div><div class="metric-sub">Total skills logged</div></div>
+        <div class="metric-card" style="background:linear-gradient(135deg,#7c3aed,#9f67fa);color:#fff;border:none;">
+          <div class="metric-label" style="color:rgba(255,255,255,.7)">Admin</div>
+          <div class="metric-val" style="color:#fff;font-size:18px;">You 👑</div>
+          <div class="metric-sub" style="color:rgba(255,255,255,.7)">Full access</div>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="card-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <div>
+            <h3 style="font-size:16px;font-weight:700;">👥 Registered Users</h3>
+            <p class="sub" style="margin-bottom:0">All users registered on CareerVista</p>
+          </div>
+          <input type="text" id="adm-search" placeholder="Search by name or email..." oninput="renderAdminUsers()" style="padding:8px 14px;border:1.5px solid var(--border);border-radius:var(--rad-sm);font-size:13px;font-family:'Inter';outline:none;width:240px;"/>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;" id="adm-users-table">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border);">
+                <th style="text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;">User</th>
+                <th style="text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;">Email</th>
+                <th style="text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;">Education</th>
+                <th style="text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;">Skills</th>
+                <th style="text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;">Top Career</th>
+                <th style="text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;">Score</th>
+                <th style="text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="adm-users-body"></tbody>
+          </table>
+          <div id="adm-no-users" style="text-align:center;padding:3rem;color:var(--muted);font-size:14px;display:none;">No users registered yet.</div>
+        </div>
+      </div>
+
+      <!-- Skills Distribution -->
+      <div class="card-box">
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">📊 Top Skills Across All Users</h3>
+        <p class="sub">Most common skills added by students</p>
+        <div id="adm-skills-dist" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
+      </div>
+
+      <!-- User Detail Modal (inline) -->
+      <div id="adm-user-detail" class="card-box hide">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <h3 style="font-size:16px;font-weight:700;" id="adm-detail-name">User Detail</h3>
+          <button class="btn btn-ghost btn-sm" onclick="closeAdminDetail()">✕ Close</button>
+        </div>
+        <div id="adm-detail-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="page" id="page-dashboard">
+  <div class="dash-wrapper">
+    <div class="sidebar">
+      <div class="sidebar-profile">
+        <div class="s-avatar" id="s-av">R</div>
+        <div><div class="s-name" id="s-name">Riya</div><div class="s-edu" id="s-edu-lbl">2nd Year B.Tech</div></div>
+      </div>
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" id="tab-overview" onclick="switchTab('overview')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Overview
+      </div>
+      <div class="nav-item" id="tab-simulate" onclick="switchTab('simulate')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Career Simulation
+      </div>
+      <div class="nav-item" id="tab-results" onclick="switchTab('results')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> My Results
+      </div>
+      <div class="nav-item" id="tab-resources" onclick="switchTab('resources')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Resources
+      </div>
+      <div class="nav-item" id="tab-market" onclick="switchTab('market')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Market Insights
+      </div>
+      <div class="nav-section">Account</div>
+      <div class="nav-item" id="tab-profile" onclick="switchTab('profile')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> My Profile
+      </div>
+    </div>
+
+    <div class="dash-main">
+
+      <!-- OVERVIEW -->
+      <div id="content-overview">
+        <div class="page-head"><h2 class="font-display">Good day, <span id="greet-name">Riya</span> 👋</h2><p>Here's a snapshot of your career readiness</p></div>
+        <div class="metrics-row">
+          <div class="metric-card"><div class="metric-label">Top Career Match</div><div class="metric-val" id="ov-career">—</div><div class="metric-sub">Best fit for you</div></div>
+          <div class="metric-card"><div class="metric-label">Employability</div><div class="metric-val" id="ov-emp">—</div><div class="metric-sub">Top career score</div></div>
+          <div class="metric-card"><div class="metric-label">Skills Added</div><div class="metric-val" id="ov-skills">0</div><div class="metric-sub">In your profile</div></div>
+          <div class="metric-card"><div class="metric-label">Prep Time</div><div class="metric-val" id="ov-prep">—</div><div class="metric-sub">To reach 80%+</div></div>
+        </div>
+        <div class="card-box">
+          <h3>Ready to simulate your career?</h3>
+          <p class="sub">Add your current skills and pick career paths to compare — get your employability score in seconds.</p>
+          <button class="btn btn-primary" onclick="switchTab('simulate')">Start Simulation &rarr;</button>
+        </div>
+        <div class="card-box" style="background:linear-gradient(135deg,#0ea5a5,#34d399);color:#fff;border:none">
+          <h3 style="color:#fff">What is CareerVista?</h3>
+          <p style="font-size:13px;opacity:.9;margin-top:6px;line-height:1.65">CareerVista is a Youth Employability Simulation Engine that helps students compare careers, predict job readiness, identify skill gaps, find learning resources, and plan their preparation — all in one place.</p>
+        </div>
+      </div>
+
+      <!-- SIMULATE -->
+      <div id="content-simulate" class="hide">
+        <div class="page-head"><h2 class="font-display">Career Simulation</h2><p>Enter your skills and choose up to 3 careers to compare</p></div>
+        <div class="card-box">
+          <h3>Your Current Skills</h3>
+          <p class="sub">Add programming languages, tools, and domain knowledge you already have</p>
+          <div class="skill-input-row">
+            <input type="text" id="skill-inp" placeholder="e.g. Python, SQL, Excel..." onkeydown="if(event.key==='Enter')addSkill()"/>
+            <button class="btn btn-primary" onclick="addSkill()">Add</button>
+          </div>
+          <div class="skill-chips" id="skill-chips"></div>
+          <div class="quick-adds">
+            <span style="font-size:11px;color:var(--muted);font-weight:600">Quick add:</span>
+            <span class="q-tag" onclick="qAdd('Python')">Python</span>
+            <span class="q-tag" onclick="qAdd('SQL')">SQL</span>
+            <span class="q-tag" onclick="qAdd('Java')">Java</span>
+            <span class="q-tag" onclick="qAdd('C')">C</span>
+            <span class="q-tag" onclick="qAdd('Excel')">Excel</span>
+            <span class="q-tag" onclick="qAdd('DBMS')">DBMS</span>
+            <span class="q-tag" onclick="qAdd('HTML/CSS')">HTML/CSS</span>
+            <span class="q-tag" onclick="qAdd('JavaScript')">JavaScript</span>
+            <span class="q-tag" onclick="qAdd('Machine Learning')">ML</span>
+            <span class="q-tag" onclick="qAdd('Statistics')">Statistics</span>
+            <span class="q-tag" onclick="qAdd('Networking')">Networking</span>
+            <span class="q-tag" onclick="qAdd('Linux')">Linux</span>
+          </div>
+        </div>
+        <div class="card-box">
+          <h3>Select Careers to Simulate</h3>
+          <p class="sub">Choose up to 3 career paths you want to compare side-by-side</p>
+          <div class="career-grid" id="career-grid"></div>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" onclick="runSim()">&#9654; Run Career Simulation</button>
+      </div>
+
+      <!-- RESULTS -->
+      <div id="content-results" class="hide">
+        <div class="page-head"><h2 class="font-display">Simulation Results</h2><p>Your personalized career analysis with charts and insights</p></div>
+        <div id="results-body">
+          <div class="empty-state"><div class="icon">📊</div><p>Run a career simulation first to see your results here.</p><button class="btn btn-primary" onclick="switchTab('simulate')">Go to Simulation</button></div>
+        </div>
+      </div>
+
+      <!-- RESOURCES -->
+      <div id="content-resources" class="hide">
+        <div class="page-head"><h2 class="font-display">Smart Resource Navigator</h2><p>Curated courses, certifications, practice sites and free tools for every skill gap</p></div>
+        <div id="resources-body">
+          <div class="empty-state"><div class="icon">📚</div><p>Run a career simulation first — we'll find resources for your exact skill gaps.</p><button class="btn btn-primary" onclick="switchTab('simulate')">Go to Simulation</button></div>
+        </div>
+      </div>
+
+      <!-- MARKET -->
+      <div id="content-market" class="hide">
+        <div class="page-head"><h2 class="font-display">Market Insights</h2><p>Live demand, growth trends, and salary data by career</p></div>
+        <div id="market-body"></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div id="content-profile" class="hide">
+        <div class="page-head"><h2 class="font-display">My Profile</h2><p>Manage your account details</p></div>
+        <div class="card-box" style="max-width:560px">
+          <div class="profile-avatar-row">
+            <div class="profile-avatar" id="prof-av">R</div>
+            <div><div style="font-family:'Poppins';font-weight:700;font-size:20px" id="prof-name">Riya Sharma</div><div style="font-size:13px;color:var(--muted)" id="prof-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f4d56465e7f5a475e524f535a115c5052">[email&#160;protected]</a></div></div>
+          </div>
+          <div class="form-group"><label>Education Level</label><select id="prof-edu"></select></div>
+          <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+        </div>
+        <div class="card-box" style="max-width:560px">
+          <h3 style="font-size:14px;font-weight:600;color:var(--muted);margin-bottom:12px">ACCOUNT ACTIONS</h3>
+          <button class="btn btn-danger btn-full" onclick="logout()">Log Out</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ════════════════════════════
+// CAREER DATA
+// ════════════════════════════
+const CAREERS=[
+  {id:'data-analyst',name:'Data Analyst',icon:'📊',domain:'Data & Analytics',
+   required:['Python','SQL','Excel','Power BI','Statistics','Data Visualization','DBMS'],
+   nice:['Machine Learning','Tableau','R'],
+   demand:88,competition:62,growth:'High',avgSalary:'₹5–12 LPA',prepMonths:[4,5],
+   marketSaturation:58,growthScore:75,
+   desc:'Analyze data to help businesses make decisions using SQL, Python, and visualization tools.',
+   demandSkills:[['SQL',92],['Python',88],['Excel',85],['Power BI',78]],
+   trends:['Big data adoption growing 23% YoY','Power BI demand up 40%','Every company needs data insights']},
+  {id:'software-dev',name:'Software Developer',icon:'💻',domain:'Software Engineering',
+   required:['Java','Data Structures','Algorithms','System Design','Git','SQL','JavaScript'],
+   nice:['Spring Boot','React','Docker','AWS'],
+   demand:92,competition:80,growth:'Very High',avgSalary:'₹6–18 LPA',prepMonths:[8,10],
+   marketSaturation:82,growthScore:88,
+   desc:'Build software applications, design systems, and write clean scalable code.',
+   demandSkills:[['Java/Python',94],['DSA',90],['System Design',82],['Git',78]],
+   trends:['Massive demand but intense competition','DSA critical for top companies','Full-stack preferred']},
+  {id:'ml-engineer',name:'ML Engineer',icon:'🤖',domain:'AI & Machine Learning',
+   required:['Python','Machine Learning','Deep Learning','Statistics','Linear Algebra','TensorFlow','SQL'],
+   nice:['PyTorch','MLOps','Cloud (AWS/GCP)','NLP'],
+   demand:85,competition:55,growth:'Explosive',avgSalary:'₹8–22 LPA',prepMonths:[10,14],
+   marketSaturation:42,growthScore:96,
+   desc:'Build and deploy machine learning models to solve real-world problems at scale.',
+   demandSkills:[['Python',96],['ML/DL',90],['Statistics',80],['Cloud',72]],
+   trends:['AI jobs grew 74% in 2024','GenAI demand skyrocketing','High salary premiums']},
+  {id:'web-dev',name:'Web Developer',icon:'🌐',domain:'Web Development',
+   required:['HTML/CSS','JavaScript','React','Node.js','SQL','Git'],
+   nice:['TypeScript','MongoDB','Docker','REST APIs'],
+   demand:80,competition:75,growth:'Steady',avgSalary:'₹4–14 LPA',prepMonths:[5,7],
+   marketSaturation:72,growthScore:55,
+   desc:'Design and build websites and web applications for businesses and startups.',
+   demandSkills:[['JavaScript',90],['React',85],['CSS',82],['Node.js',75]],
+   trends:['Startups always hiring','React dominates frontend','Remote opportunities high']},
+  {id:'cybersecurity',name:'Cybersecurity',icon:'🔐',domain:'Security',
+   required:['Networking','Linux','Python','Ethical Hacking','Cryptography','Security+'],
+   nice:['CISSP','CEH','Cloud Security','SIEM'],
+   demand:90,competition:40,growth:'Very High',avgSalary:'₹6–16 LPA',prepMonths:[7,10],
+   marketSaturation:28,growthScore:90,
+   desc:'Protect systems, networks, and data from cyber threats and security breaches.',
+   demandSkills:[['Networking',88],['Linux',84],['Hacking Skills',79],['Python',76]],
+   trends:['Every org needs security talent','Cyberattacks up 38% in 2024','Low competition vs demand']},
+  {id:'product-manager',name:'Product Manager',icon:'🎯',domain:'Product & Strategy',
+   required:['Problem Solving','Data Analysis','SQL','Communication','Agile','User Research'],
+   nice:['Python','Figma','A/B Testing','Roadmapping'],
+   demand:70,competition:68,growth:'Growing',avgSalary:'₹8–25 LPA',prepMonths:[6,9],
+   marketSaturation:65,growthScore:68,
+   desc:'Define product vision, work with engineering and design, drive product strategy.',
+   demandSkills:[['Agile',82],['Communication',80],['Data Sense',75],['SQL',68]],
+   trends:['PM roles growing in startups','Technical PMs are rare & valued','Agile adoption universal']}
+];
+
+// ════════════════════════════
+// RESOURCE DATABASE
+// ════════════════════════════
+const RESOURCES={
+  'Python':[
+    {type:'course',title:'Python for Everybody Specialization',platform:'Coursera',duration:'4 months',free:false,desc:'Complete beginner to intermediate Python for data tasks.',url:'https://coursera.org/specializations/python'},
+    {type:'free',title:'CS50P – Introduction to Python',platform:'edX / Harvard',duration:'10 weeks',free:true,desc:'Free world-class Python course from Harvard University.',url:'https://cs50.harvard.edu/python'},
+    {type:'practice',title:'HackerRank Python Practice',platform:'HackerRank',duration:'Self-paced',free:true,desc:'100+ Python challenges from basic to advanced.',url:'https://hackerrank.com/domains/python'},
+    {type:'cert',title:'PCEP – Python Entry Programmer',platform:'Python Institute',duration:'1 month prep',free:false,desc:'Official Python certification recognized by employers.',url:'https://pythoninstitute.org/pcep'}
+  ],
+  'SQL':[
+    {type:'free',title:'SQL Tutorial – Full Course',platform:'freeCodeCamp / YouTube',duration:'4 hours',free:true,desc:'Complete SQL from scratch — free YouTube course.',url:'https://youtube.com/watch?v=HXV3zeQKqGY'},
+    {type:'course',title:'The Complete SQL Bootcamp',platform:'Udemy',duration:'9 hours',free:false,desc:'Most popular SQL course with real project exercises.',url:'https://udemy.com/course/the-complete-sql-bootcamp'},
+    {type:'practice',title:'SQLZoo Interactive Exercises',platform:'SQLZoo',duration:'Self-paced',free:true,desc:'Practice SQL with interactive exercises in your browser.',url:'https://sqlzoo.net'},
+    {type:'cert',title:'Oracle Database SQL Certified',platform:'Oracle',duration:'2 months prep',free:false,desc:'Industry-recognized Oracle SQL certification.',url:'https://education.oracle.com'}
+  ],
+  'Excel':[
+    {type:'free',title:'Excel for Beginners – Full Tutorial',platform:'YouTube / GCFGlobal',duration:'3 hours',free:true,desc:'Complete Excel tutorial covering formulas, charts and pivot tables.',url:'https://edu.gcfglobal.org/en/excel'},
+    {type:'course',title:'Excel Skills for Business',platform:'Coursera',duration:'6 months',free:false,desc:'Macquarie University specialization for business Excel.',url:'https://coursera.org/specializations/excel'},
+    {type:'cert',title:'Microsoft Office Specialist – Excel',platform:'Microsoft',duration:'1 month prep',free:false,desc:'Official Microsoft Excel certification for professionals.',url:'https://learn.microsoft.com/en-us/certifications/mos-excel-expert-2019'},
+    {type:'practice',title:'Excel Practice Online',platform:'ExcelPracticeOnline',duration:'Self-paced',free:true,desc:'Interactive Excel exercises directly in your browser.',url:'https://excelpracticeonline.com'}
+  ],
+  'Power BI':[
+    {type:'free',title:'Power BI Full Course',platform:'YouTube / Simplilearn',duration:'5 hours',free:true,desc:'Free Power BI tutorial covering dashboards and DAX.',url:'https://youtube.com/watch?v=AGrl-H87pRU'},
+    {type:'course',title:'Microsoft Power BI Desktop',platform:'Udemy',duration:'17 hours',free:false,desc:'Most comprehensive Power BI course with hands-on projects.',url:'https://udemy.com/course/microsoft-power-bi-up-running-with-power-bi-desktop'},
+    {type:'cert',title:'PL-300: Power BI Data Analyst',platform:'Microsoft',duration:'2 months prep',free:false,desc:'Official Microsoft Power BI certification.',url:'https://learn.microsoft.com/en-us/certifications/power-bi-data-analyst-associate'}
+  ],
+  'Statistics':[
+    {type:'free',title:'Statistics & Probability',platform:'Khan Academy',duration:'Self-paced',free:true,desc:'Complete statistics curriculum for free on Khan Academy.',url:'https://khanacademy.org/math/statistics-probability'},
+    {type:'course',title:'Statistics with Python Specialization',platform:'Coursera',duration:'5 months',free:false,desc:'Applied statistics with Python for data science.',url:'https://coursera.org/specializations/statistics-with-python'},
+    {type:'practice',title:'StatQuest with Josh Starmer',platform:'YouTube',duration:'Self-paced',free:true,desc:'Entertaining, clear statistical concept videos.',url:'https://youtube.com/c/joshstarmer'}
+  ],
+  'Data Visualization':[
+    {type:'free',title:'Data Visualization with Python',platform:'Cognitive Class / IBM',duration:'4 weeks',free:true,desc:'Free IBM course on Matplotlib, Seaborn, and Folium.',url:'https://cognitiveclass.ai/courses/data-visualization-with-python'},
+    {type:'course',title:'Data Visualization in Tableau',platform:'Coursera',duration:'5 weeks',free:false,desc:'UC Davis specialization for Tableau mastery.',url:'https://coursera.org/learn/data-visualization'}
+  ],
+  'DBMS':[
+    {type:'free',title:'DBMS Course – GATE Preparation',platform:'YouTube / NPTEL',duration:'30 lectures',free:true,desc:'Complete DBMS theory and concepts free from NPTEL.',url:'https://nptel.ac.in'},
+    {type:'course',title:'Database Management Essentials',platform:'Coursera',duration:'5 weeks',free:false,desc:'Core database concepts, SQL, and ER modeling.',url:'https://coursera.org/learn/database-management'}
+  ],
+  'Java':[
+    {type:'free',title:'Java Programming – MOOC.fi',platform:'University of Helsinki',duration:'14 weeks',free:true,desc:'Best free Java course worldwide from Helsinki University.',url:'https://java-programming.mooc.fi'},
+    {type:'course',title:'Java Masterclass',platform:'Udemy',duration:'80+ hours',free:false,desc:'Most comprehensive Java course on Udemy.',url:'https://udemy.com/course/java-the-complete-java-developer-course'},
+    {type:'cert',title:'Oracle Java SE Programmer',platform:'Oracle',duration:'2 months prep',free:false,desc:'Industry standard Java certification by Oracle.',url:'https://education.oracle.com/java-se-17-developer/pexam_1Z0-829'},
+    {type:'practice',title:'Coding Bat Java',platform:'CodingBat',duration:'Self-paced',free:true,desc:'Short Java practice problems for beginners to intermediate.',url:'https://codingbat.com/java'}
+  ],
+  'Data Structures':[
+    {type:'free',title:'DSA – CS50 and MIT OpenCourseWare',platform:'MIT OCW',duration:'Self-paced',free:true,desc:'Free MIT lecture notes and problem sets for DSA.',url:'https://ocw.mit.edu'},
+    {type:'course',title:'Master the Coding Interview: DSA',platform:'Udemy / Zero to Mastery',duration:'20 hours',free:false,desc:'Interview-focused DSA with Python and JavaScript.',url:'https://udemy.com/course/master-the-coding-interview-data-structures-algorithms'},
+    {type:'practice',title:'LeetCode Problems',platform:'LeetCode',duration:'Self-paced',free:true,desc:'Industry standard platform for DSA interview practice.',url:'https://leetcode.com'},
+    {type:'practice',title:'HackerRank Data Structures',platform:'HackerRank',duration:'Self-paced',free:true,desc:'Structured DSA practice with difficulty levels.',url:'https://hackerrank.com/domains/data-structures'}
+  ],
+  'Algorithms':[
+    {type:'free',title:'Algorithms – Khan Academy',platform:'Khan Academy',duration:'Self-paced',free:true,desc:'Visual algorithm explanations from scratch.',url:'https://khanacademy.org/computing/computer-science/algorithms'},
+    {type:'course',title:'Algorithms Specialization',platform:'Coursera / Stanford',duration:'4 months',free:false,desc:'Stanford\'s famous algorithm course by Tim Roughgarden.',url:'https://coursera.org/specializations/algorithms'}
+  ],
+  'System Design':[
+    {type:'free',title:'System Design Primer',platform:'GitHub',duration:'Self-paced',free:true,desc:'Most starred system design resource on GitHub.',url:'https://github.com/donnemartin/system-design-primer'},
+    {type:'course',title:'Grokking System Design Interview',platform:'Educative',duration:'25 hours',free:false,desc:'Industry-standard system design interview prep.',url:'https://educative.io/courses/grokking-the-system-design-interview'}
+  ],
+  'Git':[
+    {type:'free',title:'Git & GitHub Crash Course',platform:'freeCodeCamp / YouTube',duration:'1 hour',free:true,desc:'Complete Git basics from scratch in 1 hour.',url:'https://youtube.com/watch?v=RGOj5yH7evk'},
+    {type:'free',title:'Learn Git Branching',platform:'learngitbranching.js.org',duration:'Self-paced',free:true,desc:'Interactive visual Git tutorial in your browser.',url:'https://learngitbranching.js.org'}
+  ],
+  'JavaScript':[
+    {type:'free',title:'JavaScript Algorithms & DS',platform:'freeCodeCamp',duration:'300 hours',free:true,desc:'Complete JavaScript curriculum with certification.',url:'https://freecodecamp.org/learn/javascript-algorithms-and-data-structures'},
+    {type:'course',title:'The Complete JavaScript Course',platform:'Udemy',duration:'69 hours',free:false,desc:'Most popular JavaScript course by Jonas Schmedtmann.',url:'https://udemy.com/course/the-complete-javascript-course'},
+    {type:'practice',title:'JavaScript30',platform:'Wesbos.com',duration:'30 days',free:true,desc:'Build 30 things in 30 days with vanilla JavaScript.',url:'https://javascript30.com'}
+  ],
+  'Machine Learning':[
+    {type:'free',title:'Machine Learning Specialization',platform:'Coursera / Andrew Ng',duration:'3 months',free:false,desc:'The most famous ML course by Andrew Ng — audit free.',url:'https://coursera.org/specializations/machine-learning-introduction'},
+    {type:'free',title:'Fast.ai Practical ML',platform:'fast.ai',duration:'Self-paced',free:true,desc:'Top-down practical ML course completely free.',url:'https://course.fast.ai'},
+    {type:'cert',title:'TensorFlow Developer Certificate',platform:'Google',duration:'3 months prep',free:false,desc:'Google\'s official TensorFlow developer certification.',url:'https://tensorflow.org/certificate'}
+  ],
+  'Deep Learning':[
+    {type:'course',title:'Deep Learning Specialization',platform:'Coursera / deeplearning.ai',duration:'5 months',free:false,desc:'Andrew Ng\'s complete deep learning course — audit free.',url:'https://coursera.org/specializations/deep-learning'},
+    {type:'free',title:'Neural Networks: Zero to Hero',platform:'YouTube / Andrej Karpathy',duration:'Self-paced',free:true,desc:'Build neural networks from scratch with PyTorch.',url:'https://youtube.com/playlist?list=PLAqhIIjkb_3XWx3nnLBKiSGTd8JhLhBWD'}
+  ],
+  'TensorFlow':[
+    {type:'free',title:'TensorFlow Official Tutorials',platform:'TensorFlow.org',duration:'Self-paced',free:true,desc:'Official tutorials and beginner guides by Google.',url:'https://tensorflow.org/tutorials'},
+    {type:'cert',title:'TensorFlow Developer Certificate',platform:'Google',duration:'3 months prep',free:false,desc:'Official credential recognized by top AI companies.',url:'https://tensorflow.org/certificate'}
+  ],
+  'Linear Algebra':[
+    {type:'free',title:'Linear Algebra – 3Blue1Brown',platform:'YouTube',duration:'Self-paced',free:true,desc:'Visually stunning linear algebra series, free on YouTube.',url:'https://youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab'},
+    {type:'free',title:'Linear Algebra – MIT OpenCourseWare',platform:'MIT OCW',duration:'Self-paced',free:true,desc:'Gilbert Strang\'s complete linear algebra course free from MIT.',url:'https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011'}
+  ],
+  'HTML/CSS':[
+    {type:'free',title:'Responsive Web Design',platform:'freeCodeCamp',duration:'300 hours',free:true,desc:'Complete HTML/CSS certification with projects.',url:'https://freecodecamp.org/learn/2022/responsive-web-design'},
+    {type:'free',title:'HTML & CSS Full Course',platform:'YouTube / Dave Gray',duration:'11 hours',free:true,desc:'Comprehensive beginner to advanced HTML & CSS.',url:'https://youtube.com/watch?v=mU6anWqZJcc'},
+    {type:'practice',title:'CSS Battle',platform:'cssbattle.dev',duration:'Self-paced',free:true,desc:'Fun CSS challenges to sharpen your styling skills.',url:'https://cssbattle.dev'}
+  ],
+  'React':[
+    {type:'free',title:'React – Official Docs Tutorial',platform:'React.dev',duration:'Self-paced',free:true,desc:'React\'s official interactive learning guide.',url:'https://react.dev/learn'},
+    {type:'course',title:'React – The Complete Guide',platform:'Udemy',duration:'48 hours',free:false,desc:'Most comprehensive React course including Hooks and Redux.',url:'https://udemy.com/course/react-the-complete-guide-incl-redux'},
+    {type:'practice',title:'Frontend Mentor Challenges',platform:'frontendmentor.io',duration:'Self-paced',free:true,desc:'Build real React projects from professional designs.',url:'https://frontendmentor.io'}
+  ],
+  'Node.js':[
+    {type:'free',title:'Node.js Full Course',platform:'YouTube / Traversy Media',duration:'6 hours',free:true,desc:'Node.js basics to REST API building.',url:'https://youtube.com/watch?v=fBNz5xF-Kx4'},
+    {type:'course',title:'The Complete Node.js Developer',platform:'Udemy',duration:'35 hours',free:false,desc:'Build production-ready Node apps and REST APIs.',url:'https://udemy.com/course/the-complete-nodejs-developer-course-2'}
+  ],
+  'Networking':[
+    {type:'free',title:'Computer Networking – Full Course',platform:'freeCodeCamp / YouTube',duration:'9 hours',free:true,desc:'Complete networking fundamentals including TCP/IP and DNS.',url:'https://youtube.com/watch?v=qiQR5rTSshw'},
+    {type:'cert',title:'CompTIA Network+',platform:'CompTIA',duration:'3 months prep',free:false,desc:'Industry-standard entry-level networking certification.',url:'https://comptia.org/certifications/network'}
+  ],
+  'Linux':[
+    {type:'free',title:'The Linux Command Line',platform:'linuxcommand.org',duration:'Self-paced',free:true,desc:'Free book and tutorial for mastering the Linux command line.',url:'https://linuxcommand.org'},
+    {type:'course',title:'Linux Essentials',platform:'NDG / Cisco NetAcad',duration:'70 hours',free:false,desc:'Linux Professional Institute Essentials course.',url:'https://netacad.com'},
+    {type:'cert',title:'LPIC-1: Linux Administrator',platform:'LPI',duration:'2 months prep',free:false,desc:'Entry-level Linux certification by Linux Professional Institute.',url:'https://lpi.org/our-certifications/lpic-1-overview'}
+  ],
+  'Ethical Hacking':[
+    {type:'free',title:'Ethical Hacking Full Course',platform:'YouTube / freeCodeCamp',duration:'15 hours',free:true,desc:'Complete ethical hacking and penetration testing.',url:'https://youtube.com/watch?v=3Kq1MIfTWCE'},
+    {type:'cert',title:'CEH – Certified Ethical Hacker',platform:'EC-Council',duration:'3 months prep',free:false,desc:'Most recognized ethical hacking certification worldwide.',url:'https://iclass.eccouncil.org/ceh'},
+    {type:'practice',title:'TryHackMe',platform:'TryHackMe',duration:'Self-paced',free:true,desc:'Hands-on cybersecurity labs in a browser-based environment.',url:'https://tryhackme.com'}
+  ],
+  'Cryptography':[
+    {type:'free',title:'Cryptography I – Stanford',platform:'Coursera (audit free)',duration:'7 weeks',free:true,desc:'World-class cryptography by Dan Boneh from Stanford.',url:'https://coursera.org/learn/crypto'}
+  ],
+  'Security+':[
+    {type:'cert',title:'CompTIA Security+',platform:'CompTIA',duration:'3 months prep',free:false,desc:'Most popular entry-level cybersecurity certification.',url:'https://comptia.org/certifications/security'},
+    {type:'free',title:'Security+ Study Guide',platform:'Professor Messer',duration:'Self-paced',free:true,desc:'Free, comprehensive Security+ video course.',url:'https://professormesser.com/security-plus/sy0-601/sy0-601-video/sy0-601-comptia-security-plus-course'}
+  ],
+  'Problem Solving':[
+    {type:'free',title:'Computational Thinking & Problem Solving',platform:'Coursera (audit)',duration:'4 weeks',free:true,desc:'Learn structured problem-solving approaches.',url:'https://coursera.org/learn/computational-thinking-problem-solving'},
+    {type:'practice',title:'Project Euler',platform:'projecteuler.net',duration:'Self-paced',free:true,desc:'Mathematical and computational problem solving challenges.',url:'https://projecteuler.net'}
+  ],
+  'Data Analysis':[
+    {type:'free',title:'Data Analysis with Python',platform:'freeCodeCamp',duration:'300 hours',free:true,desc:'Complete data analysis certification with pandas and NumPy.',url:'https://freecodecamp.org/learn/data-analysis-with-python'},
+    {type:'cert',title:'IBM Data Analyst Certificate',platform:'Coursera',duration:'4 months',free:false,desc:'IBM professional certificate recognized by top companies.',url:'https://coursera.org/professional-certificates/ibm-data-analyst'}
+  ],
+  'Communication':[
+    {type:'free',title:'English Communication Skills',platform:'Coursera / Georgia Tech',duration:'3 months',free:false,desc:'Improve professional communication — audit free.',url:'https://coursera.org/specializations/english-for-technology'},
+    {type:'free',title:'Public Speaking – Toastmasters',platform:'Toastmasters',duration:'Ongoing',free:false,desc:'Join a local Toastmasters club to practice speaking.',url:'https://toastmasters.org'}
+  ],
+  'Agile':[
+    {type:'free',title:'Agile Fundamentals',platform:'LinkedIn Learning (free trial)',duration:'2 hours',free:false,desc:'Introduction to Agile, Scrum, and Kanban.',url:'https://linkedin.com/learning'},
+    {type:'cert',title:'PMI Agile Certified Practitioner',platform:'PMI',duration:'3 months prep',free:false,desc:'Globally recognized Agile certification.',url:'https://pmi.org/certifications/agile-acp'},
+    {type:'free',title:'Scrum Guide (free PDF)',platform:'Scrum.org',duration:'1 hour',free:true,desc:'Official free Scrum guide — the foundation of Agile.',url:'https://scrumguides.org'}
+  ],
+  'User Research':[
+    {type:'free',title:'UX Research at Scale',platform:'Google UX Design Certificate',duration:'6 months',free:false,desc:'Google\'s UX certificate covers research deeply.',url:'https://coursera.org/professional-certificates/google-ux-design'},
+    {type:'free',title:'UX Crash Course',platform:'uxcrashcourse.com',duration:'31 days',free:true,desc:'Free 31-day daily lessons on UX and user research.',url:'https://uxcrashcourse.com'}
+  ]
+};
+
+const EDU_OPTIONS=['1st Year B.Tech / B.E.','2nd Year B.Tech / B.E.','3rd Year B.Tech / B.E.','Final Year B.Tech / B.E.','B.Sc / BCA','M.Tech / MCA / M.Sc','MBA','Other'];
+
+// ════════════════════════════
+// DB
+// ════════════════════════════
+const DB={
+  users:JSON.parse(localStorage.getItem('cv_users')||'[]'),
+  cur:JSON.parse(localStorage.getItem('cv_cur')||'null'),
+  save(){localStorage.setItem('cv_users',JSON.stringify(this.users));localStorage.setItem('cv_cur',JSON.stringify(this.cur));}
+};
+
+// ════════════════════════════
+// SCORING ENGINE
+// ════════════════════════════
+function calcScore(skills,career){
+  const norm=skills.map(s=>s.toLowerCase().trim());
+  const req=career.required.map(s=>s.toLowerCase());
+  const nice=(career.nice||[]).map(s=>s.toLowerCase());
+  const matched=req.filter(r=>norm.some(u=>u.includes(r)||r.includes(u))).length;
+  const niceM=nice.filter(n=>norm.some(u=>u.includes(n)||n.includes(u))).length;
+  const base=(matched/req.length)*100;
+  const bonus=(niceM/Math.max(nice.length,1))*10;
+  return Math.min(Math.round((base+bonus)*(1+(career.demand-70)/500)),96);
+}
+function getGap(skills,career){const norm=skills.map(s=>s.toLowerCase().trim());return career.required.filter(r=>!norm.some(u=>u.includes(r.toLowerCase())||r.toLowerCase().includes(u)));}
+function getMatched(skills,career){const norm=skills.map(s=>s.toLowerCase().trim());return career.required.filter(r=>norm.some(u=>u.includes(r.toLowerCase())||r.toLowerCase().includes(u)));}
+function projScore(s,gap){return Math.min(s+Math.min(gap*5,30),95);}
+// ── DYNAMIC RISK CALCULATION (4 parameters) ──
+// competition(35%) + marketSaturation(30%) raise risk; demand(20%) + growthScore(15%) lower it
+function calcRiskLevel(c){
+  const raw=(c.competition*0.35)+(c.marketSaturation*0.30)-(c.demand*0.20)-(c.growthScore*0.15);
+  return Math.min(100,Math.max(0,Math.round(raw+30)));
+}
+function riskTag(l){if(l<35)return{lbl:'Low Risk',cls:'tag-green'};if(l<60)return{lbl:'Medium Risk',cls:'tag-amber'};return{lbl:'High Risk',cls:'tag-red'};}
+
+// Time estimation
+function calcTimeToReady(score, career){
+  const gapRatio=1-(score/100);
+  const base=(career.prepMonths[0]+career.prepMonths[1])/2;
+  const months=Math.max(1,Math.round(base*gapRatio*1.1));
+  const today=new Date();
+  today.setMonth(today.getMonth()+months);
+  const readyDate=today.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  return {months,readyDate};
+}
+
+// ════════════════════════════
+// STATE
+// ════════════════════════════
+let userSkills=[];
+let selectedCareers=[];
+let simResults=null;
+let chartInstances={};
+
+function destroyChart(id){if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}}
+
+// ════════════════════════════
+// UI
+// ════════════════════════════
+function showPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');window.scrollTo(0,0);}
+function goHome(){if(DB.cur)showPage('dashboard');else showPage('home');}
+function switchTab(tab){
+  ['overview','simulate','results','resources','market','profile'].forEach(t=>{
+    document.getElementById('content-'+t).classList.add('hide');
+    document.getElementById('tab-'+t).classList.remove('active');
+  });
+  document.getElementById('content-'+tab).classList.remove('hide');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='market')renderMarket();
+  if(tab==='overview')updateOverview();
+  if(tab==='resources')renderResources();
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function loading(show,msg){document.getElementById('loading-text').textContent=msg||'Loading...';document.getElementById('loading').classList.toggle('show',show);}
+
+// ════════════════════════════
+// AUTH
+// ════════════════════════════
+function doSignup(){
+  const fname=document.getElementById('s-fname').value.trim(),lname=document.getElementById('s-lname').value.trim();
+  const email=document.getElementById('s-email').value.trim().toLowerCase(),edu=document.getElementById('s-edu').value,pass=document.getElementById('s-pass').value;
+  const err=document.getElementById('signup-err');err.style.display='none';
+  if(!fname||!lname){err.textContent='Please enter your full name.';err.style.display='block';return;}
+  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';err.style.display='block';return;}
+  if(!edu){err.textContent='Please select your education level.';err.style.display='block';return;}
+  if(pass.length<6){err.textContent='Password must be at least 6 characters.';err.style.display='block';return;}
+  if(DB.users.find(u=>u.email===email)){err.textContent='An account with this email already exists.';err.style.display='block';return;}
+  const user={id:Date.now(),fname,lname,email,edu,pass,skills:[],results:null};
+  DB.users.push(user);DB.cur=user;DB.save();initSession();toast('Account created! Welcome to CareerVista 🎉');
+}
+function doLogin(){
+  const email=document.getElementById('l-email').value.trim().toLowerCase(),pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('login-err');err.style.display='none';
+  // Admin check
+  if(email==='admin@careervista.com'&&pass==='admin123'){
+    document.getElementById('nav-landing-links').classList.add('hide');
+    document.getElementById('nav-user-links').classList.remove('hide');
+    document.getElementById('nav-username').textContent='Admin 👑';
+    showPage('admin');
+    renderAdminPanel();
+    toast('Welcome, Admin! 👑');
+    return;
+  }
+  const user=DB.users.find(u=>u.email===email&&u.pass===pass);
+  if(!user){err.textContent='Invalid email or password.';err.style.display='block';return;}
+  DB.cur=user;DB.save();initSession();toast('Welcome back, '+user.fname+'!');
+}
+function logout(){DB.cur=null;DB.save();userSkills=[];selectedCareers=[];simResults=null;document.getElementById('nav-landing-links').classList.remove('hide');document.getElementById('nav-user-links').classList.add('hide');showPage('home');}
+
+function initSession(){
+  const u=DB.cur;if(!u)return;
+  document.getElementById('nav-landing-links').classList.add('hide');
+  document.getElementById('nav-user-links').classList.remove('hide');
+  document.getElementById('nav-username').textContent=u.fname+' '+u.lname;
+  document.getElementById('s-av').textContent=u.fname[0].toUpperCase();
+  document.getElementById('s-name').textContent=u.fname+' '+u.lname;
+  document.getElementById('s-edu-lbl').textContent=u.edu;
+  document.getElementById('greet-name').textContent=u.fname;
+  document.getElementById('prof-av').textContent=u.fname[0].toUpperCase();
+  document.getElementById('prof-name').textContent=u.fname+' '+u.lname;
+  document.getElementById('prof-email').textContent=u.email;
+  document.getElementById('prof-edu').innerHTML=EDU_OPTIONS.map(o=>`<option${o===u.edu?' selected':''}>${o}</option>`).join('');
+  userSkills=u.skills||[];renderChips();
+  if(u.results){simResults=u.results;renderResults(u.results);}
+  initCareerGrid();updateOverview();showPage('dashboard');switchTab('overview');
+}
+
+// ════════════════════════════
+// SKILLS
+// ════════════════════════════
+function addSkill(){const inp=document.getElementById('skill-inp'),v=inp.value.trim();if(!v)return;if(userSkills.map(s=>s.toLowerCase()).includes(v.toLowerCase())){toast('Already added!');inp.value='';return;}userSkills.push(v);inp.value='';renderChips();saveSkills();document.getElementById('ov-skills').textContent=userSkills.length;}
+function qAdd(s){if(userSkills.map(x=>x.toLowerCase()).includes(s.toLowerCase())){toast(s+' already added!');return;}userSkills.push(s);renderChips();saveSkills();document.getElementById('ov-skills').textContent=userSkills.length;}
+function rmSkill(i){userSkills.splice(i,1);renderChips();saveSkills();document.getElementById('ov-skills').textContent=userSkills.length;}
+function renderChips(){const c=document.getElementById('skill-chips');if(!userSkills.length){c.innerHTML='<span style="font-size:12px;color:var(--muted)">No skills added yet.</span>';return;}c.innerHTML=userSkills.map((s,i)=>`<div class="chip">${s}<span class="rm" onclick="rmSkill(${i})">×</span></div>`).join('');}
+function saveSkills(){if(!DB.cur)return;const u=DB.users.find(u=>u.id===DB.cur.id);if(u){u.skills=userSkills;DB.cur=u;DB.save();}}
+
+// ════════════════════════════
+// CAREER GRID
+// ════════════════════════════
+function initCareerGrid(){document.getElementById('career-grid').innerHTML=CAREERS.map(c=>`<div class="career-opt" id="co-${c.id}" onclick="toggleCareer('${c.id}')"><div class="career-opt-icon">${c.icon}</div><div class="career-opt-name">${c.name}</div><div class="career-opt-domain">${c.domain}</div></div>`).join('');}
+function toggleCareer(id){const el=document.getElementById('co-'+id);if(selectedCareers.includes(id)){selectedCareers=selectedCareers.filter(c=>c!==id);el.classList.remove('selected');}else{if(selectedCareers.length>=3){toast('You can compare up to 3 careers.');return;}selectedCareers.push(id);el.classList.add('selected');}}
+
+// ════════════════════════════
+// SIMULATION
+// ════════════════════════════
+function runSim(){
+  if(!userSkills.length){toast('Please add at least one skill first!');return;}
+  if(!selectedCareers.length){toast('Please select at least one career.');return;}
+  loading(true,'Simulating your career paths...');
+  setTimeout(()=>{
+    const results=selectedCareers.map(id=>{
+      const c=CAREERS.find(x=>x.id===id);
+      const s=calcScore(userSkills,c);
+      const gap=getGap(userSkills,c);
+      const matched=getMatched(userSkills,c);
+      const proj=projScore(s,gap.length);
+      const timeCalc=calcTimeToReady(s,c);
+      return{career:c,score:s,gap,matched,proj,timeCalc};
+    }).sort((a,b)=>b.score-a.score);
+    simResults=results;
+    const u=DB.users.find(u=>u.id===DB.cur.id);
+    if(u){u.results=results;DB.cur=u;DB.save();}
+    renderResults(results);
+    updateOverview();
+    loading(false);
+    switchTab('results');
+    toast('Simulation complete! 🎉 Check your results.');
+  },1600);
+}
+
+// ════════════════════════════
+// RENDER RESULTS (with charts)
+// ════════════════════════════
+const fillColors=['','alt','alt2'];
+function renderResults(results){
+  if(!results||!results.length)return;
+  const best=results[0];
+  let html='';
+
+  // Comparison cards
+  html+=`<div class="results-header">Career Comparison</div><div class="compare-grid">`;
+  results.forEach((r,i)=>{
+    const risk=riskTag(calcRiskLevel(r.career));
+    const isW=i===0;
+    html+=`<div class="compare-card${isW?' winner':''}">
+      ${isW?'<div class="winner-badge">Best Match</div>':''}
+      <div class="c-domain">${r.career.icon} ${r.career.domain}</div>
+      <div class="c-name">${r.career.name}</div>
+      <div class="prob-row"><span class="prob-big">${r.score}</span><span class="prob-pct">%</span></div>
+      <div class="prob-label">Employability probability</div>
+      <div class="prog-bar"><div class="prog-fill ${fillColors[i]}" style="width:${r.score}%"></div></div>
+      <div class="c-meta">
+        <div class="c-meta-row"><span class="c-meta-key">Prep time</span><span class="c-meta-val">${r.timeCalc.months} months</span></div>
+        <div class="c-meta-row"><span class="c-meta-key">Ready by</span><span class="c-meta-val">${r.timeCalc.readyDate}</span></div>
+        <div class="c-meta-row"><span class="c-meta-key">Skills missing</span><span class="c-meta-val">${r.gap.length} skill${r.gap.length!==1?'s':''}</span></div>
+        <div class="c-meta-row"><span class="c-meta-key">Avg salary</span><span class="c-meta-val">${r.career.avgSalary}</span></div>
+        <div class="c-meta-row"><span class="c-meta-key">Risk</span><span class="c-meta-val"><span class="tag ${risk.cls}">${risk.lbl}</span></span></div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+
+  // Outcome box
+  const topGap=best.gap.slice(0,3).join(', ')||'advanced topics';
+  html+=`<div class="outcome-box">
+    <h3>📈 Outcome Prediction — ${best.career.name}</h3>
+    <p>If you learn <strong>${topGap}</strong> in the next <strong>${best.timeCalc.months} months</strong>, your employability will jump from <span class="outcome-hl">${best.score}%</span> → <span class="outcome-hl">${best.proj}%</span>. You could be job-ready by <strong>${best.timeCalc.readyDate}</strong>.</p>
+  </div>`;
+
+  // ── NEW: SKILL GAP ANALYSIS WITH CHARTS ──
+  html+=`<div class="gap-chart-section">
+    <h3>Skill Gap Analysis with Charts</h3>
+    <p class="sub">Visual breakdown of your skills matched vs missing for each career path</p>
+    <div class="chart-grid">`;
+  results.forEach((r,i)=>{
+    html+=`<div class="chart-block">
+      <h4>${r.career.icon} ${r.career.name}</h4>
+      <div class="chart-wrap" style="height:200px"><canvas id="gapChart${i}"></canvas></div>
+    </div>`;
+  });
+  html+=`</div>
+    <div style="margin-top:1.4rem">
+      <h4 style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Skill-by-skill strength comparison</h4>
+      <div class="chart-wrap" style="height:${Math.max(results[0].career.required.length*36+60,200)}px"><canvas id="radarChart"></canvas></div>
+    </div>
+  </div>`;
+
+  // ── NEW: DYNAMIC SCORE UPDATES ──
+  html+=`<div class="score-tracker">
+    <h3>Dynamic Score Updates</h3>
+    <p class="sub">See how your employability score changes as you add more skills — toggle to compare</p>
+    <div class="score-toggle-row" id="score-toggle-row">`;
+  results.forEach((r,i)=>{ html+=`<button class="score-toggle${i===0?' active':''}" onclick="setScoreView(${i})" id="stoggle-${i}">${r.career.icon} ${r.career.name}</button>`; });
+  html+=`</div>
+    <div class="score-dial-row" id="dial-row"></div>
+    <div class="score-line-chart chart-wrap"><canvas id="scoreLineChart"></canvas></div>
+  </div>`;
+
+  // ── NEW: TIME TO READY ESTIMATE ──
+  html+=`<div class="time-ready-section">
+    <h3>Time to Job-Ready Estimate</h3>
+    <p class="sub">Personalised preparation timeline based on your current skills and target careers</p>
+    <div class="time-cards">`;
+  const tcColors=['tc-primary','tc-purple','tc-amber'];
+  results.forEach((r,i)=>{
+    html+=`<div class="time-card ${tcColors[i]}">
+      <div class="time-card-icon">${r.career.icon}</div>
+      <div class="time-card-career">${r.career.name}</div>
+      <div class="time-card-months">${r.timeCalc.months}</div>
+      <div class="time-card-unit">months to job-ready</div>
+      <div class="time-card-date">Est. ready: ${r.timeCalc.readyDate}</div>
+    </div>`;
+  });
+  html+=`</div>
+    <div class="time-breakdown">
+      <h4>Preparation phase breakdown — ${best.career.name}</h4>`;
+  const phases=[
+    {label:'Foundation skills',pct:Math.round((best.matched.length/best.career.required.length)*100),color:'#0ea5a5'},
+    {label:'Gap skills to learn',pct:Math.round((best.gap.length/best.career.required.length)*100),color:'#f59e0b'},
+    {label:'Projects & practice',pct:25,color:'#6366f1'},
+    {label:'Interview prep',pct:15,color:'#10b981'}
+  ];
+  phases.forEach(p=>{
+    html+=`<div class="time-phase">
+      <div class="phase-bar-wrap">
+        <div class="phase-label"><span>${p.label}</span><span>${p.pct}%</span></div>
+        <div class="phase-bar"><div class="phase-fill" style="width:${p.pct}%;background:${p.color}"></div></div>
+      </div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  // Skill gap table
+  html+=`<div class="card-box"><h3>Detailed Skill Gap Table</h3><table class="gap-table"><thead><tr><th>Skill</th><th>Career</th><th>Status</th><th>Priority</th></tr></thead><tbody>`;
+  results.forEach(r=>{
+    r.matched.forEach(s=>{html+=`<tr><td><div class="skill-dot"><div class="dot dot-g"></div>${s}</div></td><td>${r.career.name}</td><td><span class="tag tag-green">Have it ✓</span></td><td>—</td></tr>`;});
+    r.gap.forEach((s,idx)=>{const p=idx===0?'<span class="tag tag-red">High</span>':idx===1?'<span class="tag tag-amber">Medium</span>':'<span class="tag tag-gray">Low</span>';html+=`<tr><td><div class="skill-dot"><div class="dot dot-r"></div>${s}</div></td><td>${r.career.name}</td><td><span class="tag tag-amber">Missing</span></td><td>${p}</td></tr>`;});
+  });
+  html+=`</tbody></table></div>`;
+
+  // Roadmap
+  const rmSkills=best.gap.slice(0,4);
+  if(rmSkills.length){
+    html+=`<div class="card-box"><h3>Learning Roadmap — ${best.career.name}</h3>`;
+    rmSkills.forEach((sk,i)=>{const t=[1,1,2,2][i];const last=i===rmSkills.length-1;html+=`<div class="roadmap-step"><div class="rm-left"><div class="rm-circle">${i+1}</div>${!last?'<div class="rm-line"></div>':''}</div><div class="rm-body"><h4>Learn ${sk}</h4><p>Build practical knowledge through hands-on projects and real exercises.</p><div class="rm-time">~${t} month${t>1?'s':''}</div></div></div>`;});
+    html+=`</div>`;
+  }
+
+  // Risk analysis
+  html+=`<div class="card-box"><h3>Career Risk Analysis</h3>`;
+  html+=`<p style="font-size:13px;color:var(--muted);margin-bottom:1.2rem">Risk is calculated from 4 live parameters — competition level, market saturation, market demand, and growth trajectory.</p>`;
+  results.forEach(r=>{
+    const rl=calcRiskLevel(r.career);
+    const risk=riskTag(rl);
+    const riskColor=rl<35?'var(--success)':rl<60?'var(--warn)':'var(--danger)';
+    const params=[
+      {label:'Competition Level',    val:r.career.competition,    dir:'risk',   tip:'Higher competition among candidates increases career risk'},
+      {label:'Market Saturation',    val:r.career.marketSaturation,dir:'risk',  tip:'Higher saturation means more supply than demand — increases risk'},
+      {label:'Market Demand',        val:r.career.demand,          dir:'safety', tip:'Higher employer demand reduces career risk'},
+      {label:'Growth Trajectory',    val:r.career.growthScore,     dir:'safety', tip:'Faster field growth reduces long-term career risk'},
+    ];
+    html+=`<div style="border:1px solid var(--border);border-radius:var(--rad);padding:1.1rem;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:14px;font-weight:600">${r.career.icon} ${r.career.name}</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--muted)">Overall Risk Score: <strong style="color:${riskColor}">${rl}/100</strong></span>
+          <span class="tag ${risk.cls}">${risk.lbl}</span>
+        </div>
+      </div>
+      <div class="prog-bar" style="height:8px;margin-bottom:14px"><div class="prog-fill" style="width:${rl}%;background:${riskColor}"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${params.map(p=>{
+          const barColor=p.dir==='risk'
+            ?(p.val<40?'var(--success)':p.val<65?'var(--warn)':'var(--danger)')
+            :(p.val>70?'var(--success)':p.val>45?'var(--warn)':'var(--danger)');
+          const dirIcon=p.dir==='risk'?'⬆ Raises risk':'⬇ Lowers risk';
+          const dirColor=p.dir==='risk'?'var(--danger)':'var(--success)';
+          return`<div style="background:var(--muted-bg);border-radius:var(--rad-sm);padding:10px 12px" title="${p.tip}">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+              <span style="font-size:12px;font-weight:600;color:var(--fg)">${p.label}</span>
+              <span style="font-size:11px;font-weight:700;color:${barColor}">${p.val}%</span>
+            </div>
+            <div style="height:5px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:5px">
+              <div style="height:100%;width:${p.val}%;background:${barColor};border-radius:10px;transition:width .8s ease"></div>
+            </div>
+            <span style="font-size:10px;font-weight:600;color:${dirColor}">${dirIcon}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  html+=`<div style="background:var(--secondary-bg);border-radius:var(--rad-sm);padding:10px 14px;font-size:12px;color:var(--secondary-fg)">
+    <strong>Formula:</strong> Risk Score = (Competition × 35%) + (Market Saturation × 30%) − (Market Demand × 20%) − (Growth Trajectory × 15%)
+  </div></div>`;
+
+  document.getElementById('results-body').innerHTML=html;
+
+  // Render charts after DOM update
+  setTimeout(()=>{
+    renderGapCharts(results);
+    renderScoreView(results,0);
+  },100);
+}
+
+// ════════════════════════════
+// CHARTS
+// ════════════════════════════
+function renderGapCharts(results){
+  results.forEach((r,i)=>{
+    destroyChart('gapChart'+i);
+    const ctx=document.getElementById('gapChart'+i);
+    if(!ctx)return;
+    const colors=['#0ea5a5','#6366f1','#f59e0b'];
+    chartInstances['gapChart'+i]=new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:['Skills You Have','Skills to Learn'],
+        datasets:[{data:[r.matched.length,r.gap.length],backgroundColor:[colors[i],'#e2e8f0'],borderWidth:0,hoverOffset:4}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw} skills`}}}}
+    });
+  });
+
+  // Radar chart — skill strength per career
+  destroyChart('radarChart');
+  const rctx=document.getElementById('radarChart');
+  if(!rctx)return;
+  const allSkills=[...new Set(results.flatMap(r=>r.career.required))].slice(0,8);
+  const rColors=['rgba(14,165,165,0.25)','rgba(99,102,241,0.25)','rgba(245,158,11,0.25)'];
+  const rBorders=['#0ea5a5','#6366f1','#f59e0b'];
+  chartInstances['radarChart']=new Chart(rctx,{
+    type:'radar',
+    data:{
+      labels:allSkills,
+      datasets:results.map((r,i)=>({
+        label:r.career.name,
+        data:allSkills.map(sk=>{const norm=userSkills.map(s=>s.toLowerCase());return norm.some(u=>u.includes(sk.toLowerCase())||sk.toLowerCase().includes(u))?100:20;}),
+        fill:true,backgroundColor:rColors[i],borderColor:rBorders[i],pointBackgroundColor:rBorders[i],borderWidth:2,pointRadius:3
+      }))
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{font:{size:11}}}},scales:{r:{beginAtZero:true,max:100,ticks:{display:false},grid:{color:'rgba(0,0,0,0.06)'},pointLabels:{font:{size:10}}}}}
+  });
+}
+
+let currentScoreView=0;
+function setScoreView(i){
+  if(!simResults)return;
+  currentScoreView=i;
+  document.querySelectorAll('.score-toggle').forEach((b,idx)=>b.classList.toggle('active',idx===i));
+  renderScoreView(simResults,i);
+}
+function renderScoreView(results,i){
+  const r=results[i];
+  if(!r)return;
+
+  // Dials: current score, projected score, demand
+  const dials=[
+    {label:'Current Score',val:r.score,color:'#0ea5a5'},
+    {label:'Projected Score',val:r.proj,color:'#6366f1'},
+    {label:'Market Demand',val:r.career.demand,color:'#f59e0b'},
+    {label:'After 1 Skill',val:Math.min(r.score+8,96),color:'#10b981'}
+  ];
+  document.getElementById('dial-row').innerHTML=dials.map(d=>{
+    const circ=2*Math.PI*34;
+    const offset=circ-(circ*(d.val/100));
+    return`<div class="score-dial">
+      <div class="score-dial-ring">
+        <svg viewBox="0 0 80 80">
+          <circle class="dial-track" cx="40" cy="40" r="34"/>
+          <circle class="dial-fill" cx="40" cy="40" r="34" stroke="${d.color}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+        </svg>
+        <div class="dial-text" style="color:${d.color}">${d.val}%</div>
+      </div>
+      <div class="dial-label">${d.label}</div>
+    </div>`;
+  }).join('');
+
+  // Line chart: score progression as skills added
+  destroyChart('scoreLineChart');
+  const lctx=document.getElementById('scoreLineChart');
+  if(!lctx)return;
+  const labels=['0 skills','1 skill','2 skills','3 skills','4 skills','5 skills','All skills'];
+  const progressData=[0,1,2,3,4,5,r.gap.length].map(n=>{
+    const partial=[...userSkills,...r.gap.slice(0,n)];
+    return calcScore(partial,r.career);
+  });
+  chartInstances['scoreLineChart']=new Chart(lctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'Your Score Progression',data:progressData,fill:true,backgroundColor:'rgba(14,165,165,0.1)',borderColor:'#0ea5a5',tension:.4,pointBackgroundColor:'#0ea5a5',pointRadius:4,borderWidth:2},
+        {label:'Target (80%)',data:Array(7).fill(80),fill:false,borderColor:'rgba(239,68,68,0.5)',borderDash:[5,5],pointRadius:0,borderWidth:1.5,label:'Target 80%'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{font:{size:11}}}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(0,0,0,0.04)'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
+  });
+}
+
+// ════════════════════════════
+// SMART RESOURCE NAVIGATOR
+// ════════════════════════════
+let resFilter='all';
+let resCareerIdx=0;
+function renderResources(){
+  if(!simResults||!simResults.length){return;}
+  const container=document.getElementById('resources-body');
+  const results=simResults;
+
+  let html=`<div class="resource-section">
+    <h3>Resources for Your Skill Gaps</h3>
+    <p class="sub">Curated learning materials matched to your missing skills — filter by type</p>
+    <div class="resource-career-tabs">`;
+  results.forEach((r,i)=>{html+=`<button class="res-career-tab${i===0?' active':''}" onclick="setResCareer(${i})" id="rctab-${i}">${r.career.icon} ${r.career.name} <span style="background:var(--danger-bg);color:var(--danger);font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px">${r.gap.length}</span></button>`;});
+  html+=`</div>
+    <div class="resource-filter-row">
+      <button class="res-filter active" onclick="setResFilter('all')" id="rf-all">All Types</button>
+      <button class="res-filter" onclick="setResFilter('course')" id="rf-course">📖 Courses</button>
+      <button class="res-filter" onclick="setResFilter('cert')" id="rf-cert">🏆 Certifications</button>
+      <button class="res-filter" onclick="setResFilter('practice')" id="rf-practice">⚡ Practice</button>
+      <button class="res-filter" onclick="setResFilter('free')" id="rf-free">🆓 Free Only</button>
+    </div>
+    <div id="resource-cards-wrap"></div>
+  </div>`;
+  container.innerHTML=html;
+  renderResourceCards();
+}
+
+function setResFilter(f){
+  resFilter=f;
+  ['all','course','cert','practice','free'].forEach(x=>document.getElementById('rf-'+x).classList.toggle('active',x===f));
+  renderResourceCards();
+}
+function setResCareer(i){
+  resCareerIdx=i;
+  document.querySelectorAll('.res-career-tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  renderResourceCards();
+}
+function renderResourceCards(){
+  if(!simResults)return;
+  const r=simResults[resCareerIdx];
+  const gapSkills=r.gap;
+  let cards=[];
+  gapSkills.forEach(skill=>{
+    const res=RESOURCES[skill]||[];
+    res.forEach(item=>{cards.push({...item,skill});});
+  });
+  // filter
+  if(resFilter==='free') cards=cards.filter(c=>c.free);
+  else if(resFilter!=='all') cards=cards.filter(c=>c.type===resFilter);
+  const wrap=document.getElementById('resource-cards-wrap');
+  if(!wrap)return;
+  if(!cards.length){
+    wrap.innerHTML=`<div class="no-resources">${gapSkills.length===0?'🎉 No skill gaps for this career with your current skills!':'No resources found for the selected filter. Try "All Types".'}</div>`;
+    return;
+  }
+  const typeClass={course:'rt-course',cert:'rt-cert',practice:'rt-practice',free:'rt-free'};
+  const typeLabel={course:'Course',cert:'Certification',practice:'Practice',free:'Free Resource'};
+  wrap.innerHTML=`<div class="resource-grid">${cards.map(c=>`
+    <div class="resource-card" onclick="window.open('${c.url}','_blank')">
+      <div class="resource-card-top">
+        <span class="resource-type-badge ${typeClass[c.type]}">${typeLabel[c.type]}</span>
+        ${c.free?'<span class="resource-free-badge">FREE</span>':''}
+      </div>
+      <div class="resource-card-skill">For: ${c.skill}</div>
+      <h4>${c.title}</h4>
+      <p class="resource-card-desc">${c.desc}</p>
+      <div class="resource-card-footer">
+        <span class="resource-platform">${c.platform}</span>
+        <span class="resource-duration">⏱ ${c.duration}</span>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+// ════════════════════════════
+// OVERVIEW + MARKET + PROFILE
+// ════════════════════════════
+function updateOverview(){
+  document.getElementById('ov-skills').textContent=userSkills.length;
+  if(simResults&&simResults.length){const b=simResults[0];document.getElementById('ov-career').textContent=b.career.name;document.getElementById('ov-emp').textContent=b.score+'%';document.getElementById('ov-prep').textContent=b.timeCalc.months+' mo';}
+}
+function renderMarket(){
+  document.getElementById('market-body').innerHTML=CAREERS.map(c=>{const risk=riskTag(calcRiskLevel(c));return`<div class="market-card"><div class="market-card-head"><span class="market-card-title">${c.icon} ${c.name}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag tag-teal">${c.growth} growth</span><span class="tag ${risk.cls}">${risk.lbl}</span></div></div><p style="font-size:13px;color:var(--muted);margin-bottom:12px">${c.desc}</p>${c.demandSkills.map(([sk,pct])=>`<div class="demand-item"><div class="demand-lbl"><span>${sk}</span><span>${pct}%</span></div><div class="demand-bar"><div class="demand-fill" style="width:${pct}%"></div></div></div>`).join('')}<div class="market-trends">${c.trends.map(t=>`<span class="market-trend">→ ${t}</span>`).join('')}</div><div class="market-salary">Average Salary: ${c.avgSalary}</div></div>`;}).join('');}
+function saveProfile(){if(!DB.cur)return;const edu=document.getElementById('prof-edu').value;const u=DB.users.find(u=>u.id===DB.cur.id);if(u){u.edu=edu;DB.cur=u;DB.save();document.getElementById('s-edu-lbl').textContent=edu;toast('Profile saved!');}}
+
+
+
+// ════════════════════════════
+// FORGOT PASSWORD (OTP FLOW)
+// ════════════════════════════
+let _fpOtp='';
+let _fpEmail='';
+let _fpResendTimer=null;
+
+function showForgotPassword(){
+  _fpOtp='';_fpEmail='';
+  if(_fpResendTimer)clearInterval(_fpResendTimer);
+  fpGoBack(1);
+  document.getElementById('fp-email').value='';
+  ['fp-err-1','fp-err-2','fp-err-3'].forEach(id=>{document.getElementById(id).style.display='none';});
+  document.getElementById('forgot-modal').style.display='flex';
+  setTimeout(()=>document.getElementById('fp-email').focus(),150);
+}
+function closeForgotPassword(){
+  document.getElementById('forgot-modal').style.display='none';
+  if(_fpResendTimer)clearInterval(_fpResendTimer);
+}
+function fpGoBack(step){
+  [1,2,3,4].forEach(n=>{
+    const el=document.getElementById('fp-step-'+n);
+    if(el)el.style.display=(n===step?'block':'none');
+  });
+  fpUpdateDots(step);
+}
+function fpUpdateDots(step){
+  [1,2,3].forEach(n=>{
+    const dot=document.getElementById('fp-dot-'+n);
+    if(!dot)return;
+    dot.style.width=(n===step)?'28px':'6px';
+    dot.style.background=(n<=step)?'var(--primary)':'var(--border)';
+  });
+}
+
+async function fpStep1(){
+  const email=document.getElementById('fp-email').value.trim().toLowerCase();
+  const err=document.getElementById('fp-err-1');
+  const btn=document.querySelector('#fp-step-1 .btn-primary');
+  err.style.display='none';
+  if(!email||!email.includes('@')){err.textContent='Please enter a valid email address.';err.style.display='block';return;}
+  const user=DB.users.find(u=>u.email===email);
+  if(!user){err.textContent='No account found with this email address.';err.style.display='block';return;}
+  _fpEmail=email;
+  _fpOtp=String(Math.floor(100000+Math.random()*900000));
+
+  if(EMAILJS_PUBLIC_KEY==='YOUR_PUBLIC_KEY'){
+    err.innerHTML='⚠️ EmailJS is not configured yet. Please follow the setup guide below.';
+    err.style.display='block';return;
+  }
+
+  btn.disabled=true;btn.textContent='Sending…';
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
+      to_email:email,
+      to_name:user.fname+' '+user.lname,
+      otp_code:_fpOtp,
+      app_name:'CareerVista'
+    });
+    document.getElementById('fp-sent-msg').innerHTML=`We've sent a 6-digit code to <strong>${email}</strong>`;
+    [0,1,2,3,4,5].forEach(i=>{const b=document.getElementById('otp-'+i);b.value='';b.style.borderColor='var(--border)';});
+    document.getElementById('fp-err-2').style.display='none';
+    fpGoBack(2);
+    setTimeout(()=>document.getElementById('otp-0').focus(),100);
+    fpStartResendTimer();
+  }catch(e){
+    err.innerHTML='❌ Failed to send email. Check your EmailJS config.<br><span style="font-size:12px;font-weight:normal">'+(e.text||e.message||'Unknown error')+'</span>';
+    err.style.display='block';
+  }finally{btn.disabled=false;btn.textContent='Send Verification Code';}
+}
+
+function fpStartResendTimer(){
+  let sec=60;
+  const link=document.querySelector('#fp-step-2 a[onclick="fpResend()"]');
+  if(!link)return;
+  link.style.pointerEvents='none';link.style.opacity='.4';
+  link.textContent='Resend Code (60s)';
+  if(_fpResendTimer)clearInterval(_fpResendTimer);
+  _fpResendTimer=setInterval(()=>{
+    sec--;
+    if(sec<=0){clearInterval(_fpResendTimer);link.textContent='Resend Code';link.style.pointerEvents='';link.style.opacity='1';}
+    else{link.textContent=`Resend Code (${sec}s)`;}
+  },1000);
+}
+
+async function fpResend(){
+  _fpOtp=String(Math.floor(100000+Math.random()*900000));
+  [0,1,2,3,4,5].forEach(i=>{const b=document.getElementById('otp-'+i);b.value='';b.style.borderColor='var(--border)';});
+  document.getElementById('fp-err-2').style.display='none';
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_email:_fpEmail,otp_code:_fpOtp,app_name:'CareerVista'});
+    toast('New code sent to '+_fpEmail+' ✉️');
+    fpStartResendTimer();
+  }catch(e){toast('Failed to resend. Please try again.');}
+}
+function otpNext(i){
+  const b=document.getElementById('otp-'+i);
+  b.value=b.value.replace(/\D/g,'');
+  b.style.borderColor=b.value?'var(--primary)':'var(--border)';
+  if(b.value&&i<5){
+    document.getElementById('otp-'+(i+1)).focus();
+  }
+  if(i===5&&b.value){fpStep2();}
+}
+function otpBack(e,i){
+  if(e.key==='Backspace'&&!document.getElementById('otp-'+i).value&&i>0){
+    document.getElementById('otp-'+(i-1)).focus();
+  }
+}
+function fpStep2(){
+  const entered=[0,1,2,3,4,5].map(i=>document.getElementById('otp-'+i).value).join('');
+  const err=document.getElementById('fp-err-2');
+  err.style.display='none';
+  if(entered.length<6){err.textContent='Please enter the full 6-digit code.';err.style.display='block';return;}
+  if(entered!==_fpOtp){
+    err.textContent='Incorrect code. Please check and try again.';err.style.display='block';
+    [0,1,2,3,4,5].forEach(i=>{document.getElementById('otp-'+i).style.borderColor='var(--danger)';});
+    return;
+  }
+  document.getElementById('fp-new-pass').value='';
+  document.getElementById('fp-conf-pass').value='';
+  document.getElementById('fp-err-3').style.display='none';
+  document.getElementById('fp-strength-wrap').style.display='none';
+  fpGoBack(3);
+  setTimeout(()=>document.getElementById('fp-new-pass').focus(),100);
+  // Attach strength checker
+  document.getElementById('fp-new-pass').oninput=function(){fpCheckStrength(this.value);};
+}
+function fpCheckStrength(v){
+  const wrap=document.getElementById('fp-strength-wrap');
+  if(!v){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  let score=0;
+  if(v.length>=6)score++;
+  if(v.length>=10)score++;
+  if(/[A-Z]/.test(v)&&/[0-9]/.test(v))score++;
+  if(/[^A-Za-z0-9]/.test(v))score++;
+  const colors=['','var(--danger)','var(--warn)','#3b82f6','var(--success)'];
+  const labels=['','Weak','Fair','Good','Strong 💪'];
+  [1,2,3,4].forEach(n=>{
+    document.getElementById('ps-'+n).style.background=n<=score?colors[score]:'var(--border)';
+  });
+  document.getElementById('ps-label').textContent=labels[score]||'';
+  document.getElementById('ps-label').style.color=colors[score]||'var(--muted)';
+}
+function fpTogglePass(inputId,btn){
+  const inp=document.getElementById(inputId);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+function fpStep3(){
+  const np=document.getElementById('fp-new-pass').value;
+  const cp=document.getElementById('fp-conf-pass').value;
+  const err=document.getElementById('fp-err-3');
+  err.style.display='none';
+  if(np.length<6){err.textContent='Password must be at least 6 characters.';err.style.display='block';return;}
+  if(np!==cp){err.textContent='Passwords do not match. Please try again.';err.style.display='block';return;}
+  const u=DB.users.find(u=>u.email===_fpEmail);
+  if(u){u.pass=np;if(DB.cur&&DB.cur.email===_fpEmail)DB.cur.pass=np;DB.save();}
+  fpGoBack(4);
+  toast('Password reset successfully! 🎉');
+}
+
+// ════════════════════════════
+// ADMIN PANEL
+// ════════════════════════════
+function adminLogout(){
+  document.getElementById('nav-landing-links').classList.remove('hide');
+  document.getElementById('nav-user-links').classList.add('hide');
+  showPage('home');
+  toast('Logged out from Admin panel.');
+}
+function renderAdminPanel(){
+  const users=DB.users;
+  document.getElementById('adm-total-users').textContent=users.length;
+  document.getElementById('adm-total-sims').textContent=users.filter(u=>u.results&&u.results.length).length;
+  document.getElementById('adm-total-skills').textContent=users.reduce((sum,u)=>sum+(u.skills||[]).length,0);
+  renderAdminUsers();
+  renderAdminSkills();
+}
+function renderAdminUsers(){
+  const q=(document.getElementById('adm-search')||{value:''}).value.toLowerCase();
+  const users=DB.users.filter(u=>(u.fname+' '+u.lname).toLowerCase().includes(q)||u.email.includes(q));
+  const tbody=document.getElementById('adm-users-body');
+  const noEl=document.getElementById('adm-no-users');
+  if(!users.length){tbody.innerHTML='';noEl.style.display='block';return;}
+  noEl.style.display='none';
+  tbody.innerHTML=users.map((u,i)=>{
+    const topCareer=u.results&&u.results.length?u.results[0].career.name:'—';
+    const topScore=u.results&&u.results.length?u.results[0].score+'%':'—';
+    const skillCount=(u.skills||[]).length;
+    return`<tr class="adm-user-row" style="border-bottom:1px solid var(--border);">
+      <td style="padding:10px 10px;font-size:13px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">${u.fname[0].toUpperCase()}</div>
+          <div><div style="font-weight:600">${u.fname} ${u.lname}</div></div>
+        </div>
+      </td>
+      <td style="padding:10px;font-size:13px;color:var(--muted)">${u.email}</td>
+      <td style="padding:10px;font-size:12px;color:var(--muted)">${u.edu||'—'}</td>
+      <td style="padding:10px;"><span style="background:var(--secondary-bg);color:var(--secondary-fg);font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;">${skillCount}</span></td>
+      <td style="padding:10px;font-size:13px;">${topCareer}</td>
+      <td style="padding:10px;"><span style="font-family:'Poppins';font-weight:700;font-size:14px;color:${u.results&&u.results.length?(u.results[0].score>=70?'var(--success)':u.results[0].score>=40?'var(--warn)':'var(--danger)'):'var(--muted)'}">${topScore}</span></td>
+      <td style="padding:10px;display:flex;gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="viewAdminUser(${u.id})">View</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAdminUser(${u.id})">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function renderAdminSkills(){
+  const freq={};
+  DB.users.forEach(u=>(u.skills||[]).forEach(s=>{const k=s.trim();freq[k]=(freq[k]||0)+1;}));
+  const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,20);
+  const max=sorted[0]?sorted[0][1]:1;
+  document.getElementById('adm-skills-dist').innerHTML=sorted.map(([sk,cnt])=>`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rad-sm);padding:7px 14px;display:flex;align-items:center;gap:8px;font-size:13px;">
+      <span style="font-weight:600">${sk}</span>
+      <span style="background:var(--primary);height:6px;border-radius:3px;width:${Math.round((cnt/max)*80)+20}px;display:inline-block;opacity:.6;"></span>
+      <span style="font-size:11px;color:var(--muted);font-weight:600">${cnt}</span>
+    </div>`).join('')||'<span style="color:var(--muted);font-size:13px">No skills tracked yet.</span>';
+}
+function viewAdminUser(id){
+  const u=DB.users.find(u=>u.id===id);if(!u)return;
+  document.getElementById('adm-detail-name').textContent=`👤 ${u.fname} ${u.lname}`;
+  let html=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1rem;">
+    <div><div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Email</div><div style="font-size:13px">${u.email}</div></div>
+    <div><div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Password</div><div style="font-size:13px;font-family:monospace;background:var(--muted-bg);padding:2px 8px;border-radius:4px;display:inline-block">${u.pass}</div></div>
+    <div><div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Education</div><div style="font-size:13px">${u.edu||'—'}</div></div>
+  </div>`;
+  html+=`<div style="margin-bottom:1rem"><div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Skills (${(u.skills||[]).length})</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${(u.skills||[]).length?u.skills.map(s=>`<span class="chip">${s}</span>`).join(''):'<span style="color:var(--muted);font-size:13px">No skills added</span>'}</div>
+  </div>`;
+  if(u.results&&u.results.length){
+    html+=`<div><div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Simulation Results</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+      ${u.results.map(r=>`<div style="border:1px solid var(--border);border-radius:var(--rad-sm);padding:12px">
+        <div style="font-size:12px;color:var(--muted)">${r.career.icon} ${r.career.domain}</div>
+        <div style="font-family:'Poppins';font-weight:700;font-size:15px;margin:4px 0">${r.career.name}</div>
+        <div style="font-family:'Poppins';font-weight:800;font-size:28px;color:${r.score>=70?'var(--success)':r.score>=40?'var(--warn)':'var(--danger)'}">${r.score}%</div>
+        <div style="font-size:11px;color:var(--muted)">Gap: ${r.gap.join(', ')||'None'}</div>
+      </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  document.getElementById('adm-detail-body').innerHTML=html;
+  document.getElementById('adm-user-detail').classList.remove('hide');
+  document.getElementById('adm-user-detail').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeAdminDetail(){document.getElementById('adm-user-detail').classList.add('hide');}
+function deleteAdminUser(id){
+  const u=DB.users.find(u=>u.id===id);if(!u)return;
+  if(!confirm(`Delete user "${u.fname} ${u.lname}" (${u.email})?\nThis cannot be undone.`))return;
+  DB.users=DB.users.filter(u=>u.id!==id);
+  DB.save();
+  renderAdminPanel();
+  document.getElementById('adm-user-detail').classList.add('hide');
+  toast('User deleted.');
+}
+
+// ════════════════════════════
+// INIT
+// ════════════════════════════
+if(DB.cur){initSession();}else{renderChips();initCareerGrid();}
+</script>
+</body>
+</html>
